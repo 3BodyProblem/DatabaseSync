@@ -62,6 +62,12 @@ int QuotationDatabase::EstablishConnection()
 		return -2;
 	}
 
+	if( 0 < ExecuteSql( "set names gbk;" ) )
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 set mysql client character set 2 gbk, (%s) ......", ::mysql_error( &m_oMySqlHandle ) );
+		return -3;
+	}
+
 	return 0;
 }
 
@@ -69,7 +75,15 @@ int QuotationDatabase::ExecuteSql( const char* pszSqlCmd )
 {
 	if( NULL != m_pMysqlConnection && NULL != pszSqlCmd )
 	{
-		return ::mysql_query( &m_oMySqlHandle, pszSqlCmd );
+		///<::printf( "%s\n", pszSqlCmd );
+		int	nRet = ::mysql_query( &m_oMySqlHandle, pszSqlCmd );
+
+		if( nRet < 0 )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::ExecuteSql() : [ERROR] %s", ::mysql_error( &m_oMySqlHandle ) );
+		}
+
+		return nRet;
 	}
 
 	return -1024;
@@ -82,11 +96,13 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 										, double dFluctuationPercent, unsigned __int64 nVolume, unsigned __int64 nTradingVolume, double dAmount
 										, short nIsTrading, unsigned int nTradingDate, double dUpLimit, const char* pszClassID )
 {
-	char		pszSqlCmd[1024] = { 0 };
+	char		pszSqlCmd[1024*2] = { 0 };
 	char		pszTradingDate[64] = { 0 };
 
+	::sprintf( pszTradingDate, "%d-%d-%d", nTradingDate/10000, nTradingDate%10000/100, nTradingDate%100 );
+
 	if( 0 >= ::sprintf( pszSqlCmd
-					, "REPLACE INTO commodity (typeId,exchange,code,name,lotSize,contractMulti,priceTick,preClose,preSettle,upperPrice,lowerPrice,price,openPrice,settlementPrice,closePrice,bid1,ask1,highPrice,lowPrice,uplowPercent,volume,nowVolumn,amount,isTrading,tradingDate,upLimit,classId) VALUES (%d,%d,%s,%s,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%I64d,%I64d,%f,%d,%s,0,%s);"
+					, "REPLACE INTO commodity (typeId,exchange,code,name,lotSize,contractMulti,priceTick,preClose,preSettle,upperPrice,lowerPrice,price,openPrice,settlementPrice,closePrice,bid1,ask1,highPrice,lowPrice,uplowPercent,volume,nowVolumn,amount,isTrading,tradingDate,upLimit,classId,addTime,updatetime) VALUES (%d,%d,\'%s\',\'%s\',%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%I64d,%I64d,%f,%d,\'%s\',0,\'%s\',now(),now());"
 					, nTypeID, nExchangeID, pszCode, pszName, nLotSize, nContractMulti, dPriceTick, dPreClose, dPreSettle, dUpperPrice, dLowerPrice, dPrice, dOpenPrice, dSettlePrice, dClosePrice, dBid1Price, dAsk1Price, dHighPrice, dLowPrice, dFluctuationPercent, nVolume, nTradingVolume, dAmount, nIsTrading
 					, pszTradingDate, pszClassID ) )
 	{
@@ -94,7 +110,7 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 		return -1024*2;
 	}
 
-	return ExecuteSql( NULL );
+	return ExecuteSql( pszSqlCmd );
 }
 
 

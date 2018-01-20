@@ -281,18 +281,7 @@ void* QuotationData::ThreadOnIdle( void* pSelf )
 	{
 		try
 		{
-			SimpleThread::Sleep( 1000 * 2 );
-
-			///< 检查是否需要落日线
-			for( MAP_MK_CLOSECFG::iterator it = refCloseCfg.begin(); it != refCloseCfg.end(); it++ )
-			{
-				for( TB_MK_CLOSECFG::iterator itCfg = it->second.begin(); itCfg != it->second.end(); itCfg++ )
-				{
-					if( DateTime::Now().TimeToLong() >= itCfg->CloseTime )	{
-						ServerStatus::GetStatusObj().UpdateMkStatus( (enum XDFMarket)(it->first), "收盘后" );
-					}
-				}
-			}
+			SimpleThread::Sleep( 500 );
 
 			refQuotation.UpdateMarketsTime();										///< 更新各市场的日期和时间
 			refStatus.UpdateTickBufOccupancyRate( refTickBuf.GetPercent() );		///< TICK缓存占用率
@@ -664,10 +653,9 @@ bool PreDayFile( std::ofstream& oDumper, enum XDFMarket eMarket, std::string sCo
 	return true;
 }
 
-int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsigned int nSnapSize, unsigned int nTradeDate )
+int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsigned int nSnapSize, T_TICK_LINE& refTickLine, unsigned int nTradeDate )
 {
 	int				nErrorCode = 0;
-	T_TICK_LINE		refTickLine = { 0 };
 	unsigned int	nMachineDate = DateTime::Now().DateToLong();
 	unsigned int	nMachineTime = DateTime::Now().TimeToLong() * 1000;
 

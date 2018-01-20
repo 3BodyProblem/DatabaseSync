@@ -16,33 +16,6 @@
 
 #pragma pack(1)
 /**
- * @class			T_MIN_LINE
- * @brief			分钟线
- * @author			barry
- */
-typedef struct
-{
-	unsigned char				Type;					///< 类型
-	char						eMarketID;				///< 市场ID
-	char						Code[16];				///< 商品代码
-	unsigned int				Date;					///< YYYYMMDD（如20170705）
-	char						Name[64];				///< 商品名称
-	unsigned int				LotSize;				///< 每手数量(股/张/份)
-	unsigned int				ContractMult;			///< 合约乘数
-	unsigned int				ContractUnit;			///< 合约单位
-	unsigned int				StartDate;				///< 首个交易日(YYYYMMDD)
-	unsigned int				EndDate;				///< 最后交易日(YYYYMMDD)
-	unsigned int				XqDate;					///< 行权日(YYYYMMDD)
-	unsigned int				DeliveryDate;			///< 交割日(YYYYMMDD)
-	unsigned int				ExpireDate;				///< 到期日(YYYYMMDD)
-	char						UnderlyingCode[16];		///< 标的代码
-	char						UnderlyingName[64];		///< 标的名称
-	char						OptionType;				///< 期权类型：'E'-欧式 'A'-美式
-	char						CallOrPut;				///< 认沽认购：'C'认购 'P'认沽
-	double						ExercisePx;				///< 行权价格
-} T_STATIC_LINE;
-
-/**
  * @class						T_TICK_LINE
  * @brief						Tick线
  */
@@ -92,6 +65,7 @@ typedef struct
 	unsigned short				ExchangeID;				///< 交易所ID
 	unsigned char				Type;					///< 类型
 	unsigned int				LotSize;				///< 手比率(最小交易数量)
+	unsigned int				ContractUnit;			///< 合约单位
 	unsigned int				ContractMulti;			///< 合约乖数
 	double						PriceTick;				///< 最小价格变动单位
 	double						UpperPrice;				///< 涨停价
@@ -101,16 +75,9 @@ typedef struct
 	double						PrePosition;			///< 昨持
 	char						PreName[8];				///< 前缀
 	double						PriceRate;				///< 放大倍数
-	double						OpenPrice;				///< 开盘价格
-	double						LastPrice;				///< 最新价格
-	double						Bid1Price;				///< 买一价
-	double						Ask1Price;				///< 卖一价
-	double						HightPrice;				///< 最高价
-	double						LowPrice;				///< 最低价
 	double						FluctuationPercent;		///< 涨跌幅度(用收盘价计算)
 	unsigned __int64			Volume;					///< 成交量
 	unsigned __int64			TradingVolume;			///< 现量
-	double						Amount;					///< 成交金额
 	short						IsTrading;				///< 是否交易标记
 	unsigned int				TradingDate;			///< 交易日期
 	char						ClassID[12];			///< 分类ID
@@ -257,10 +224,11 @@ public:
 	 * @brief					更新日线信息
 	 * @param[in]				pSnapData		快照指针
 	 * @param[in]				nSnapSize		快照大小
+	 * @param[out]				refTickLine		输出tick数据
 	 * @param[in]				nTradeDate		交易日期
 	 * @return					==0				成功
 	 */
-	int							UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsigned int nSnapSize, unsigned int nTradeDate = 0 );
+	int							UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsigned int nSnapSize, T_TICK_LINE& refTickLine, unsigned int nTradeDate = 0 );
 
 protected:
 	static void*	__stdcall	ThreadDumpTickLine( void* pSelf );			///< 日线落盘线程
