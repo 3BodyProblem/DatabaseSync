@@ -162,7 +162,7 @@ std::string& Quotation::QuoteApiVersion()
 	return m_oQuotPlugin.GetVersion();
 }
 
-int Quotation::SaveShLv1_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveShLv1( enum XDFRunStat eStatus )
 {
 	if( XRS_Normal != eStatus )
 	{
@@ -180,12 +180,12 @@ int Quotation::SaveShLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取上海的基础信息 --------------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShLv1_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShLv1() : cannot fetch market infomation." );
 		return -2;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShLv1_Static_Tick_Day() : Loading... SHL1 WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShLv1() : Loading... SHL1 WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -236,7 +236,7 @@ int Quotation::SaveShLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 
 				if( NULL == m_oQuoDataCenter.BuildSecurity( XDF_SH, sCode, tagParam ) )
 				{
-					QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShLv1_Static_Tick_Day() : cannot build security[%s] attribute", sCode.c_str() );
+					QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShLv1() : cannot build security[%s] attribute", sCode.c_str() );
 				}
 
 				pbuf += sizeof(XDFAPI_StopFlag);
@@ -311,11 +311,11 @@ int Quotation::SaveShLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 			pszCodeBuf = NULL;
 		}
 
-		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShLv1_Static_Tick_Day() : Loading... SHL1 Nametable Size = %d", nNum );
+		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShLv1() : Loading... SHL1 Nametable Size = %d", nNum );
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShLv1_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShLv1() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -406,12 +406,12 @@ int Quotation::SaveShLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 		pszCodeBuf = NULL;
 	}
 
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShLv1_Static_Tick_Day() : Loading... SHL1 Snaptable Size = %d", nNum );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShLv1() : Loading... SHL1 Snaptable Size = %d", nNum );
 
 	return 0;
 }
 
-int Quotation::SaveShOpt_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveShOpt( enum XDFRunStat eStatus )
 {
 	if( XRS_Normal != eStatus )
 	{
@@ -429,12 +429,12 @@ int Quotation::SaveShOpt_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取上海期权的基础信息 -----------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShOpt_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShOpt() : cannot fetch market infomation." );
 		return -1;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShOpt_Static_Tick_Day() : Loading... SHOPT WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShOpt() : Loading... SHOPT WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -514,11 +514,11 @@ int Quotation::SaveShOpt_Static_Tick_Day( enum XDFRunStat eStatus )
 			pszCodeBuf = NULL;
 		}
 
-		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShOpt_Static_Tick_Day() : Loading... SHOPT Nametable Size = %d", nNum );
+		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveShOpt() : Loading... SHOPT Nametable Size = %d", nNum );
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShOpt_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveShOpt() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -584,7 +584,7 @@ int Quotation::SaveShOpt_Static_Tick_Day( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveSzLv1_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveSzLv1( enum XDFRunStat eStatus )
 {
 	if( XRS_Normal != eStatus )
 	{
@@ -602,12 +602,12 @@ int Quotation::SaveSzLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取深圳的基础信息 --------------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzLv1_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzLv1() : cannot fetch market infomation." );
 		return -1;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzLv1_Static_Tick_Day() : Loading... SZL1 WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzLv1() : Loading... SZL1 WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -658,7 +658,7 @@ int Quotation::SaveSzLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 
 				if( NULL == m_oQuoDataCenter.BuildSecurity( XDF_SZ, sCode, tagParam ) )
 				{
-					QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzLv1_Static_Tick_Day() : cannot build security[%s] attribute", sCode.c_str() );
+					QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzLv1() : cannot build security[%s] attribute", sCode.c_str() );
 				}
 
 				pbuf += sizeof(XDFAPI_StopFlag);
@@ -733,11 +733,11 @@ int Quotation::SaveSzLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 			pszCodeBuf = NULL;
 		}
 
-		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzLv1_Static_Tick_Day() : Loading... SZL1 Nametable Size = %d", nNum );
+		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzLv1() : Loading... SZL1 Nametable Size = %d", nNum );
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzLv1_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzLv1() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -830,12 +830,12 @@ int Quotation::SaveSzLv1_Static_Tick_Day( enum XDFRunStat eStatus )
 		pszCodeBuf = NULL;
 	}
 
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzLv1_Static_Tick_Day() : Loading... SZL1 Snaptable Size = %d", nNum );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzLv1() : Loading... SZL1 Snaptable Size = %d", nNum );
 
 	return 0;
 }
 
-int Quotation::SaveSzOpt_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveSzOpt( enum XDFRunStat eStatus )
 {
 	if( XRS_Normal != eStatus )
 	{
@@ -853,12 +853,12 @@ int Quotation::SaveSzOpt_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取深圳期权的基础信息 --------------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzOpt_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzOpt() : cannot fetch market infomation." );
 		return -1;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzOpt_Static_Tick_Day() : Loading... SZOPT WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveSzOpt() : Loading... SZOPT WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -941,7 +941,7 @@ int Quotation::SaveSzOpt_Static_Tick_Day( enum XDFRunStat eStatus )
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzOpt_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveSzOpt() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -1009,7 +1009,7 @@ int Quotation::SaveSzOpt_Static_Tick_Day( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveCFF_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveCFF( enum XDFRunStat eStatus )
 {
 	if( XRS_Normal != eStatus )
 	{
@@ -1028,12 +1028,12 @@ int Quotation::SaveCFF_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取中金期货的基础信息 --------------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFF_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFF() : cannot fetch market infomation." );
 		return -1;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFF_Static_Tick_Day() : Loading... CFF WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFF() : Loading... CFF WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -1111,11 +1111,11 @@ int Quotation::SaveCFF_Static_Tick_Day( enum XDFRunStat eStatus )
 			pszCodeBuf = NULL;
 		}
 
-		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFF_Static_Tick_Day() : Loading... CFF Nametable Size = %d", nNum );
+		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFF() : Loading... CFF Nametable Size = %d", nNum );
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFF_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFF() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -1180,12 +1180,12 @@ int Quotation::SaveCFF_Static_Tick_Day( enum XDFRunStat eStatus )
 		pszCodeBuf = NULL;
 	}
 
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFF_Static_Tick_Day() : Loading... CFF Snaptable Size = %d", nNum );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFF() : Loading... CFF Snaptable Size = %d", nNum );
 
 	return 0;
 }
 
-int Quotation::SaveCFFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveCFFOPT( enum XDFRunStat eStatus )
 {
 	return 0;
 	if( XRS_Normal != eStatus )
@@ -1204,12 +1204,12 @@ int Quotation::SaveCFFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取中金期权的基础信息 --------------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFFOPT_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFFOPT() : cannot fetch market infomation." );
 		return -1;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFFOPT_Static_Tick_Day() : Loading... CFFOPT WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFFOPT() : Loading... CFFOPT WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -1288,11 +1288,11 @@ int Quotation::SaveCFFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
 			pszCodeBuf = NULL;
 		}
 
-		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFFOPT_Static_Tick_Day() : Loading... CFFOPT Nametable Size = %d", nNum );
+		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFFOPT() : Loading... CFFOPT Nametable Size = %d", nNum );
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFFOPT_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCFFOPT() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -1331,12 +1331,12 @@ int Quotation::SaveCFFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
 		pszCodeBuf = NULL;
 	}
 
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFFOPT_Static_Tick_Day() : Loading... CFFOPT Snaptable Size = %d", nNum );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCFFOPT() : Loading... CFFOPT Snaptable Size = %d", nNum );
 
 	return 0;
 }
 
-int Quotation::SaveCNF_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveCNF( enum XDFRunStat eStatus )
 {
 	if( XRS_Normal != eStatus )
 	{
@@ -1354,12 +1354,12 @@ int Quotation::SaveCNF_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取商品期货的基础信息 --------------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNF_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNF() : cannot fetch market infomation." );
 		return -1;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNF_Static_Tick_Day() : Loading... CNF WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNF() : Loading... CNF WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -1441,11 +1441,11 @@ int Quotation::SaveCNF_Static_Tick_Day( enum XDFRunStat eStatus )
 			pszCodeBuf = NULL;
 		}
 
-		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNF_Static_Tick_Day() : Loading... CNF Nametable Size = %d", nNum );
+		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNF() : Loading... CNF Nametable Size = %d", nNum );
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNF_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNF() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -1510,12 +1510,12 @@ int Quotation::SaveCNF_Static_Tick_Day( enum XDFRunStat eStatus )
 		pszCodeBuf = NULL;
 	}
 
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNF_Static_Tick_Day() : Loading... CNF Snaptable Size = %d", nNum );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNF() : Loading... CNF Snaptable Size = %d", nNum );
 
 	return 0;
 }
 
-int Quotation::SaveCNFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
+int Quotation::SaveCNFOPT( enum XDFRunStat eStatus )
 {
 	if( XRS_Normal != eStatus )
 	{
@@ -1533,12 +1533,12 @@ int Quotation::SaveCNFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
 	///< -------------- 获取商品期权的基础信息 --------------------------------------------
 	if( nErrorCode <= 0 )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNFOPT_Static_Tick_Day() : cannot fetch market infomation." );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNFOPT() : cannot fetch market infomation." );
 		return -1;
 	}
 
 	XDFAPI_MarketKindHead* pKindHead = (XDFAPI_MarketKindHead*)(tempbuf+ sizeof(XDFAPI_MsgHead));
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNFOPT_Static_Tick_Day() : Loading... CNFOPT WareCount = %d", pKindHead->WareCount );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNFOPT() : Loading... CNFOPT WareCount = %d", pKindHead->WareCount );
 
 	int m = sizeof(XDFAPI_MsgHead)+sizeof(XDFAPI_MarketKindHead);
 	for( int i = 0; m < nErrorCode; )
@@ -1620,11 +1620,11 @@ int Quotation::SaveCNFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
 			pszCodeBuf = NULL;
 		}
 
-		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNFOPT_Static_Tick_Day() : Loading... CNFOPT Nametable Size = %d", nNum );
+		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNFOPT() : Loading... CNFOPT Nametable Size = %d", nNum );
 	}
 	else
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNFOPT_Static_Tick_Day() : cannot fetch nametable" );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Quotation::SaveCNFOPT() : cannot fetch nametable" );
 		return -3;
 	}
 
@@ -1689,7 +1689,7 @@ int Quotation::SaveCNFOPT_Static_Tick_Day( enum XDFRunStat eStatus )
 		pszCodeBuf = NULL;
 	}
 
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNFOPT_Static_Tick_Day() : Loading... CNFOPT Snaptable Size = %d", nNum );
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::SaveCNFOPT() : Loading... CNFOPT Snaptable Size = %d", nNum );
 
 	return 0;
 }
@@ -1763,32 +1763,32 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 		switch( (enum XDFMarket)cMarket )
 		{
 		case XDF_SH:		///< 上证L1
-			SaveShLv1_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveShLv1( (enum XDFRunStat)nStatus );
 			break;
 		case XDF_SHL2:		///< 上证L2(QuoteClientApi内部屏蔽)
 			break;
 		case XDF_SHOPT:		///< 上证期权
-			SaveShOpt_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveShOpt( (enum XDFRunStat)nStatus );
 			break;
 		case XDF_SZ:		///< 深证L1
-			SaveSzLv1_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveSzLv1( (enum XDFRunStat)nStatus );
 			break;
 		case XDF_SZOPT:		///< 深圳期权
-			SaveSzOpt_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveSzOpt( (enum XDFRunStat)nStatus );
 			break;
 		case XDF_SZL2:		///< 深圳L2(QuoteClientApi内部屏蔽)
 			break;
 		case XDF_CF:		///< 中金期货
-			SaveCFF_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveCFF( (enum XDFRunStat)nStatus );
 			break;
 		case XDF_ZJOPT:		///< 中金期权
-			SaveCFFOPT_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveCFFOPT( (enum XDFRunStat)nStatus );
 			break;
 		case XDF_CNF:		///< 商品期货(上海/郑州/大连)
-			SaveCNF_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveCNF( (enum XDFRunStat)nStatus );
 			break;
 		case XDF_CNFOPT:	///< 商品期货和商品期权(上海/郑州/大连)
-			SaveCNFOPT_Static_Tick_Day( (enum XDFRunStat)nStatus );
+			SaveCNFOPT( (enum XDFRunStat)nStatus );
 			break;
 		default:
 			return false;

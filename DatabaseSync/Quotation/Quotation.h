@@ -98,14 +98,14 @@ public:///< 行情接口的回调函数
 	virtual void __stdcall		XDF_OnRspOutLog( unsigned char nLogType, unsigned char nLogLevel,const char * pLogBuf );
 	virtual int	__stdcall		XDF_OnRspNotify( unsigned int nNotifyNo, void* wParam, void* lParam );
 
-protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
+protected:///< 加载市场行情数据
 	/**
 	 * @brief					加载上海Lv1的基础信息
 	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveShLv1_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveShLv1( enum XDFRunStat eStatus );
 
 	/**
 	 * @brief					加载上海Option的基础信息
@@ -113,7 +113,7 @@ protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveShOpt_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveShOpt( enum XDFRunStat eStatus );
 
 	/**
 	 * @brief					加载深圳Lv1的基础信息
@@ -121,7 +121,7 @@ protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveSzLv1_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveSzLv1( enum XDFRunStat eStatus );
 
 	/**
 	 * @brief					加载深圳期权的基础信息
@@ -129,7 +129,7 @@ protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveSzOpt_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveSzOpt( enum XDFRunStat eStatus );
 
 	/**
 	 * @brief					加载中金期货的基础信息
@@ -137,7 +137,7 @@ protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCFF_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveCFF( enum XDFRunStat eStatus );
 
 	/**
 	 * @brief					加载中金期权的基础信息
@@ -145,7 +145,7 @@ protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCFFOPT_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveCFFOPT( enum XDFRunStat eStatus );
 
 	/**
 	 * @brief					加载商品期货的基础信息
@@ -153,7 +153,7 @@ protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCNF_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveCNF( enum XDFRunStat eStatus );
 
 	/**
 	 * @brief					加载商品期权的基础信息
@@ -161,7 +161,7 @@ protected:///< 加载市场行情数据: 落盘 静态数据文件 + tick文件
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCNFOPT_Static_Tick_Day( enum XDFRunStat eStatus );
+	int							SaveCNFOPT( enum XDFRunStat eStatus );
 
 private:
 	CriticalObject				m_oLock;				///< 临界区对象
