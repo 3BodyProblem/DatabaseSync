@@ -92,6 +92,11 @@ public:
 	 */
 	void						UpdateMarketsTime();
 
+	/**
+	 * @brief					更新行情数据到数据库
+	 */
+	void						SyncSnapshot2Database();
+
 public:///< 行情接口的回调函数
 	virtual bool __stdcall		XDF_OnRspStatusChanged( unsigned char cMarket, int nStatus );
 	virtual void __stdcall		XDF_OnRspRecvData( XDFAPI_PkgHead * pHead, const char * pszBuf, int nBytes );
@@ -170,6 +175,7 @@ private:
 	QuotationData				m_oQuoDataCenter;		///< 行情数据集合
 	WorkStatus					m_oWorkStatus;			///< 工作状态
 	std::map<int,int>			m_mapMkBuildTimeT;		///< 各市场码表构建时间记录(和当前时间小于3秒的都可以再重入进行初始化)
+	char*						m_pDataBuffer;			///< 数据缓存指针
 };
 
 

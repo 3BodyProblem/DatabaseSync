@@ -97,9 +97,8 @@ enum E_SS_Status QuoCollector::GetCollectorStatus( char* pszStatusDesc, unsigned
 	std::string&		sProgramDuration = m_oStartTime.GetDurationString();
 
 	///< 模块基础信息
-	nStrLen = ::sprintf( pszStatusDesc, "模块名=转码机,转码机版本=V%s,行情API版本=%s,运行时间=%s,Tick缓存占用=%d%%,Tick落盘失败数=%u,资讯落盘时间=%s,权息落盘时间=%s,[市场信息]"
-		, g_sVersion.c_str(), m_oQuotationData.QuoteApiVersion().c_str(), sProgramDuration.c_str()
-		, refSvrStatus.FetchTickBufOccupancyRate(), refSvrStatus.GetTickLostRef() );
+	nStrLen = ::sprintf( pszStatusDesc, "模块名=行情入库程序,模块版本=V%s,行情API版本=%s,运行时间=%s,[市场信息]"
+		, g_sVersion.c_str(), m_oQuotationData.QuoteApiVersion().c_str(), sProgramDuration.c_str() );
 
 	///< 各市场信息
 	T_SECURITY_STATUS&	refSHL1Snap = refSvrStatus.FetchSecurity( XDF_SH );

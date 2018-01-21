@@ -113,8 +113,25 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 	return ExecuteSql( pszSqlCmd );
 }
 
+int QuotationDatabase::Update_Commodity( short nExchangeID, const char* pszCode, double dPreClosePx, double dPreSettlePx, double dUpperPx, double dLowerPx, double dLastPx, double dSettlePx
+										, double dOpenPx, double dClosePx, double dBid1Px, double dAsk1Px, double dHighPx, double dLowPx, double dAmount, unsigned __int64 nVolume, unsigned int nTradingVolume
+										, double dFluctuationPercent, short nIsTrading )
+{
+	char		pszSqlCmd[1024*2] = { 0 };
 
+	if( 0 >= ::sprintf( pszSqlCmd
+					, "UPDATE commodity SET preClose=%f,preSettle=%f,upperPrice=%f,lowerPrice=%f,price=%f,openPrice=%f,settlementPrice=%f,closePrice=%f,bid1=%f,ask1=%f,highPrice=%f,lowPrice=%f,uplowPercent=%f,volume=%I64d,nowVolumn=%d,amount=%f,isTrading=%d,addTime=now(),updatetime=now() WHERE exchange=%d AND code=\'%s\';"
+					, dPreClosePx, dPreSettlePx, dUpperPx, dLowerPx, dLastPx, dOpenPx, dSettlePx, dClosePx, dBid1Px, dAsk1Px, dHighPx, dLowPx, dFluctuationPercent, nVolume, nTradingVolume, dAmount, nIsTrading
+					, nExchangeID, pszCode ) )
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Update_Commodity() : ::sprintf() invalid return value." );
+		return -1024*2;
+	}
 
+	::printf( "%s\n", pszSqlCmd );
+
+	return ExecuteSql( pszSqlCmd );
+}
 
 
 

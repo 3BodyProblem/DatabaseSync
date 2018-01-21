@@ -90,11 +90,6 @@ public:
 	const std::string&			GetDataCollectorPluginPath() const;
 
 	/**
-	 * @brief					获取市场收盘信息配置
-	 */
-	MAP_MK_CLOSECFG&			GetMkCloseCfg();
-
-	/**
 	 * @brief					获取请求文件的路径
 	 */
 	std::string					GetFinancialDataFolder() const;

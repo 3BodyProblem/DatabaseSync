@@ -151,20 +151,6 @@ bool MkCfgWriter::ConfigurateConnection4Mk( unsigned int nIndication, std::strin
 
 Configuration::Configuration()
 {
-	///< 配置各市场的收盘时间
-	CLOSE_CFG		objDefaultCfg = { 0, 160100 };
-
-	m_mapMkCloseCfg[XDF_SH].push_back( objDefaultCfg );
-//	m_mapMkCloseCfg[XDF_SHL2].push_back( objDefaultCfg );
-	m_mapMkCloseCfg[XDF_SHOPT].push_back( objDefaultCfg );
-	m_mapMkCloseCfg[XDF_SZ].push_back( objDefaultCfg );
-//	m_mapMkCloseCfg[XDF_SZL2].push_back( objDefaultCfg );
-	m_mapMkCloseCfg[XDF_SZOPT].push_back( objDefaultCfg );
-	m_mapMkCloseCfg[XDF_CF].push_back( objDefaultCfg );
-	m_mapMkCloseCfg[XDF_ZJOPT].push_back( objDefaultCfg );
-	m_mapMkCloseCfg[XDF_CNF].push_back( objDefaultCfg );
-	m_mapMkCloseCfg[XDF_CNFOPT].push_back( objDefaultCfg );
-
 	///< 配置各市场的传输驱动所在目录名称
 	m_vctMkNameCfg.push_back( "cff_setting" );
 	m_vctMkNameCfg.push_back( "cffopt_setting" );
@@ -303,11 +289,6 @@ std::string Configuration::GetFinancialDataFolder() const
 std::string Configuration::GetWeightFileFolder() const
 {
 	return m_sWeightFolder;
-}
-
-MAP_MK_CLOSECFG& Configuration::GetMkCloseCfg()
-{
-	return m_mapMkCloseCfg;
 }
 
 

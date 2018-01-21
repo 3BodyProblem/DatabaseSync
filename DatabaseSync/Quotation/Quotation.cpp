@@ -74,15 +74,23 @@ WorkStatus&	WorkStatus::operator= ( enum E_SS_Status eWorkStatus )
 
 
 ///< ----------------------------------------------------------------
+const unsigned int		MAX_SNAPSHOT_BUFFER_SIZE = sizeof(XDFAPI_StockData5) * 20000;		///< 最大快照缓存长度
 
 
 Quotation::Quotation()
+ : m_pDataBuffer( NULL )
 {
 }
 
 Quotation::~Quotation()
 {
 	Release();
+
+	if( NULL != m_pDataBuffer )
+	{
+		delete [] m_pDataBuffer;
+		m_pDataBuffer = NULL;
+	}
 }
 
 WorkStatus& Quotation::GetWorkStatus()
@@ -118,6 +126,15 @@ int Quotation::Initialize()
 			QuoCollector::GetCollector()->OnLog( TLV_WARN, "Quotation::Initialize() : failed 2 activate Quotation Plugin, errorcode = %d", nErrCode );
 			Release();
 			return -3;
+		}
+
+		if( NULL == m_pDataBuffer )
+		{
+			if( NULL == (m_pDataBuffer = new char[MAX_SNAPSHOT_BUFFER_SIZE]) )
+			{
+				QuoCollector::GetCollector()->OnLog( TLV_WARN, "Quotation::Initialize() : failed 2 allocate memory buffer" );
+				return -4;
+			}
 		}
 
 		m_oWorkStatus = ET_SS_WORKING;				///< 更新Quotation会话的状态
@@ -1796,6 +1813,60 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 	}
 
 	return true;
+}
+
+void Quotation::SyncSnapshot2Database()
+{
+	int				nErrorCode = 0;
+
+	if( NULL == m_pDataBuffer )	{
+		return;
+	}
+
+	///< ---------------- Shanghai Lv1 Snapshot -------------------------------------------
+	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SH ) )
+	{
+		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SH, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
+		for( int m = 0; m < nErrorCode; )
+		{
+			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
+			char*				pbuf = m_pDataBuffer+m +sizeof(XDFAPI_UniMsgHead);
+			int					MsgCount = pMsgHead->MsgCount;
+			T_LINE_PARAM		tagParam = { 0 };
+
+			for( int i = 0; i < MsgCount; i++ )
+			{
+				T_LINE_PARAM*	pTagParam = NULL;
+				T_TICK_LINE		tagTickLine = { 0 };
+
+				if( abs(pMsgHead->MsgType) == 21 )			///< 指数
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_SH, pbuf, sizeof(XDFAPI_IndexData), tagTickLine );			///< Tick线
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SH, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_IndexData);
+				}
+				else if( abs(pMsgHead->MsgType) == 22 )		///< 快照数据
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_SH, pbuf, sizeof(XDFAPI_StockData5), tagTickLine );		///< Tick线
+
+					pbuf += sizeof(XDFAPI_StockData5);
+				}
+
+				if( NULL != pTagParam )
+				{
+					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+					pTagParam->Volume = tagTickLine.Volume;
+					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
+					QuotationDatabase::GetDbObj().Update_Commodity( '1', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+				}
+			}
+
+			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+	}
 }
 
 void Quotation::UpdateMarketsTime()

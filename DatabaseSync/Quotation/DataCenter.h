@@ -85,7 +85,6 @@ typedef struct
 #pragma pack()
 
 
-typedef MLoopBufferSt<T_TICK_LINE>						T_TICKLINE_CACHE;			///< Tick线循环队列缓存
 typedef	std::map<enum XDFMarket,int>					TMAP_MKID2STATUS;			///< 各市场模块状态
 const	unsigned int									MAX_WRITER_NUM = 128;		///< 最大落盘文件句柄
 typedef std::map<std::string,T_LINE_PARAM>				T_MAP_QUO;					///< 行情数据缓存
@@ -247,11 +246,8 @@ protected:
 	T_MAP_QUO					m_mapCFFOPT;					///< 中金期权
 	T_MAP_QUO					m_mapCNF;						///< 商品期货(上海/郑州/大连)
 	T_MAP_QUO					m_mapCNFOPT;					///< 商品期权(上海/郑州/大连)
-	T_TICKLINE_CACHE			m_arrayTickLine;				///< 全市场tick缓存
 protected:
 	SimpleThread				m_oThdTickDump;					///< Tick落盘数据
-	SimpleThread				m_oThdMinuteDump;				///< 分钟线落盘数据
-	SimpleThread				m_oThdIdle;						///< 空闲线程
 };
 
 

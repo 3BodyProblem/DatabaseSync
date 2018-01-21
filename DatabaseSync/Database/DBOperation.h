@@ -83,7 +83,31 @@ public:
 												, double dFluctuationPercent, unsigned __int64 nVolume, unsigned __int64 nTradingVolume, double dAmount
 												, short nIsTrading, unsigned int nTradingDate, double dUpLimit, const char* pszClassID );
 
-//	int							Update_Commodity();
+	/**
+	 * @brief					更新一条商品快照信息
+	 * @param[in]				nExchangeID				市场代码, '0'：未知 '1'：SSE（上海证劵交易所） '2'：SZSE（深圳证劵交易所） '3'：cffEX（中国金融期货交易） '4'：dcE （大连商品期货交易所） '5'：ZcE（郑州商品期货交易所） '6'：SHfE （上海期货交易所）
+	 * @param[in]				pszCode					商品代码
+	 * @param[in]				dPreClosePx				昨收价格
+	 * @param[in]				dPreSettlePx			昨结价格
+	 * @param[in]				dUpperPx				涨停价格
+	 * @param[in]				dLowerPx				跌停价格
+	 * @param[in]				dLastPx					最新价格
+	 * @param[in]				dSettlePx				结算价格
+	 * @param[in]				dOpenPx					开盘价格
+	 * @param[in]				dClosePx				收盘价格
+	 * @param[in]				dBid1Px					买一价格
+	 * @param[in]				dAsk1Px					卖一价格
+	 * @param[in]				dHighPx					最高价格
+	 * @param[in]				dLowPx					最低价格
+	 * @param[in]				dAmount					成交金额
+	 * @param[in]				nVolume					成交总量
+	 * @param[in]				nTradingVolume			现量
+	 * @param[in]				dFluctuationPercent		涨跌幅度(用收盘价计算)
+	 * @param[in]				nIsTrading				是否交易标记
+	 */
+	int							Update_Commodity( short nExchangeID, const char* pszCode, double dPreClosePx, double dPreSettlePx, double dUpperPx, double dLowerPx, double dLastPx, double dSettlePx
+												, double dOpenPx, double dClosePx, double dBid1Px, double dAsk1Px, double dHighPx, double dLowPx, double dAmount, unsigned __int64 nVolume, unsigned int nTradingVolume
+												, double dFluctuationPercent, short nIsTrading );
 
 protected:
 	/**
