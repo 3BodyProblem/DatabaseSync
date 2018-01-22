@@ -490,7 +490,7 @@ int Quotation::SaveShOpt( enum XDFRunStat eStatus )
 				if( abs(pMsgHead->MsgType) == 2 )
 				{
 					XDFAPI_NameTableShOpt*	pData = (XDFAPI_NameTableShOpt*)pbuf;
-					T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SH, std::string( pData->Code, 6 ), tagParam );
+					T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SHOPT, std::string( pData->Code, 8 ), tagParam );
 
 					///< 构建商品集合
 					if( NULL != pTagParam )
@@ -563,7 +563,7 @@ int Quotation::SaveShOpt( enum XDFRunStat eStatus )
 				XDFAPI_ShOptData*		pData = (XDFAPI_ShOptData*)pbuf;
 
 				m_oQuoDataCenter.UpdateTickLine( XDF_SHOPT, pbuf, sizeof(XDFAPI_ShOptData), tagTickLine );
-				pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SHOPT, std::string( pData->Code, 6 ), tagParam );
+				pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SHOPT, std::string( pData->Code, 8 ), tagParam );
 
 				///< 构建商品集合
 				if( NULL != pTagParam )
@@ -1669,7 +1669,7 @@ int Quotation::SaveCNFOPT( enum XDFRunStat eStatus )
 				XDFAPI_CNFutOptData*	pData = (XDFAPI_CNFutOptData*)pbuf;
 
 				m_oQuoDataCenter.UpdateTickLine( XDF_CNFOPT, pbuf, sizeof(XDFAPI_CNFutOptData), tagTickLine, tagStatus.MarketDate );
-				pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SH, std::string( pData->Code ), tagParam );
+				pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_CNFOPT, std::string( pData->Code ), tagParam );
 
 				///< 构建商品集合
 				if( NULL != pTagParam )
@@ -1867,6 +1867,248 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 	}
+
+	///< ---------------- Shanghai Option Snapshot -------------------------------------------
+	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SHOPT ) )
+	{
+		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SHOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
+		for( int m = 0; m < nErrorCode; )
+		{
+			T_LINE_PARAM		tagParam = { 0 };
+			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
+			char*				pbuf = m_pDataBuffer+m +sizeof(XDFAPI_UniMsgHead);
+			int					MsgCount = pMsgHead->MsgCount;
+
+			for( int i = 0; i < MsgCount; i++ )
+			{
+				T_LINE_PARAM*	pTagParam = NULL;
+				T_TICK_LINE		tagTickLine = { 0 };
+
+				if( abs(pMsgHead->MsgType) == 15 )			///< 指数
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_SHOPT, pbuf, sizeof(XDFAPI_ShOptData), tagTickLine );
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SHOPT, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_ShOptData);
+				}
+
+				if( NULL != pTagParam )
+				{
+					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+					pTagParam->Volume = tagTickLine.Volume;
+					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
+					QuotationDatabase::GetDbObj().Update_Commodity( '1', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+				}
+			}
+
+			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+	}
+
+	///< ---------------- Shenzheng Lv1 Snapshot -------------------------------------------
+	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SZ ) )
+	{
+		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SZ, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
+		for( int m = 0; m < nErrorCode; )
+		{
+			T_LINE_PARAM		tagParam = { 0 };
+			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
+			char*				pbuf = m_pDataBuffer+m +sizeof(XDFAPI_UniMsgHead);
+			int					MsgCount = pMsgHead->MsgCount;
+
+			for( int i = 0; i < MsgCount; i++ )
+			{
+				T_LINE_PARAM*	pTagParam = NULL;
+				T_TICK_LINE		tagTickLine = { 0 };
+
+				if( abs(pMsgHead->MsgType) == 21 )			///< 指数
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_SZ, pbuf, sizeof(XDFAPI_IndexData), tagTickLine );		///< Tick线
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SZ, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_IndexData);
+				}
+				else if( abs(pMsgHead->MsgType) == 22 )		///< 快照数据
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_SZ, pbuf, sizeof(XDFAPI_StockData5), tagTickLine );	///< Tick线
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SZ, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_StockData5);
+				}
+
+				if( NULL != pTagParam )
+				{
+					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+					pTagParam->Volume = tagTickLine.Volume;
+					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
+					QuotationDatabase::GetDbObj().Update_Commodity( '2', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+				}
+			}
+
+			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+	}
+
+	///< ---------------- Shenzheng Option Snapshot -------------------------------------------
+	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SZOPT ) )
+	{
+		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SZOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
+		for( int m = 0; m < nErrorCode; )
+		{
+			T_LINE_PARAM		tagParam = { 0 };
+			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
+			char*				pbuf = m_pDataBuffer+m +sizeof(XDFAPI_UniMsgHead);
+			int					MsgCount = pMsgHead->MsgCount;
+
+			for( int i = 0; i < MsgCount; i++ )
+			{
+				T_LINE_PARAM*	pTagParam = NULL;
+				T_TICK_LINE		tagTickLine = { 0 };
+
+				if( abs(pMsgHead->MsgType) == 35 )			///< 指数
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_SZOPT, pbuf, sizeof(XDFAPI_SzOptData), tagTickLine );
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SZOPT, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_SzOptData);
+				}
+
+				if( NULL != pTagParam )
+				{
+					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+					pTagParam->Volume = tagTickLine.Volume;
+					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
+					QuotationDatabase::GetDbObj().Update_Commodity( '2', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+				}
+			}
+
+			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+	}
+
+	///< ---------------- CFF Future Snapshot -------------------------------------------
+	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CF ) )
+	{
+		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CF, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
+		for( int m = 0; m < nErrorCode; )
+		{
+			T_LINE_PARAM		tagParam = { 0 };
+			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
+			char*				pbuf = m_pDataBuffer+m +sizeof(XDFAPI_UniMsgHead);
+			int					MsgCount = pMsgHead->MsgCount;
+
+			for( int i = 0; i < MsgCount; i++ )
+			{
+				T_LINE_PARAM*	pTagParam = NULL;
+				T_TICK_LINE		tagTickLine = { 0 };
+
+				if( abs(pMsgHead->MsgType) == 20 )			///< 指数
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_CF, pbuf, sizeof(XDFAPI_CffexData), tagTickLine );
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_CF, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_CffexData);
+				}
+
+				if( NULL != pTagParam )
+				{
+					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+					pTagParam->Volume = tagTickLine.Volume;
+					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
+					QuotationDatabase::GetDbObj().Update_Commodity( '3', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+				}
+			}
+
+			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+	}
+
+	///< ---------------- CFF Future Snapshot -------------------------------------------
+	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CNF ) )
+	{
+		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CNF, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
+		for( int m = 0; m < nErrorCode; )
+		{
+			T_LINE_PARAM		tagParam = { 0 };
+			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
+			char*				pbuf = m_pDataBuffer+m +sizeof(XDFAPI_UniMsgHead);
+			int					MsgCount = pMsgHead->MsgCount;
+
+			for( int i = 0; i < MsgCount; i++ )
+			{
+				T_LINE_PARAM*	pTagParam = NULL;
+				T_TICK_LINE		tagTickLine = { 0 };
+
+				if( abs(pMsgHead->MsgType) == 26 )			///< 指数
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_CNF, pbuf, sizeof(XDFAPI_CNFutureData), tagTickLine, ServerStatus::GetStatusObj().FetchMkDate( XDF_CNF ) );
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_CNF, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_CNFutureData);
+				}
+
+				if( NULL != pTagParam )
+				{
+					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+					pTagParam->Volume = tagTickLine.Volume;
+					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;						///< 涨跌幅度(用收盘价计算)
+					QuotationDatabase::GetDbObj().Update_Commodity( '4', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+				}
+			}
+
+			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+	}
+
+	///< ---------------- CFF Option Snapshot -------------------------------------------
+	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CNFOPT ) )
+	{
+		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CNFOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
+		for( int m = 0; m < nErrorCode; )
+		{
+			T_LINE_PARAM		tagParam = { 0 };
+			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
+			char*				pbuf = m_pDataBuffer+m +sizeof(XDFAPI_UniMsgHead);
+			int					MsgCount = pMsgHead->MsgCount;
+
+			for( int i = 0; i < MsgCount; i++ )
+			{
+				T_LINE_PARAM*	pTagParam = NULL;
+				T_TICK_LINE		tagTickLine = { 0 };
+
+				if( abs(pMsgHead->MsgType) == 34 )			///< 指数
+				{
+					m_oQuoDataCenter.UpdateTickLine( XDF_CNFOPT, pbuf, sizeof(XDFAPI_CNFutOptData), tagTickLine, ServerStatus::GetStatusObj().FetchMkDate( XDF_CNFOPT ) );
+					pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_CNFOPT, std::string( tagTickLine.Code ), tagParam );
+
+					pbuf += sizeof(XDFAPI_CNFutOptData);
+				}
+
+				if( NULL != pTagParam )
+				{
+					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+					pTagParam->Volume = tagTickLine.Volume;
+					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
+					QuotationDatabase::GetDbObj().Update_Commodity( '4', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+				}
+			}
+
+			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+	}
+
 }
 
 void Quotation::UpdateMarketsTime()

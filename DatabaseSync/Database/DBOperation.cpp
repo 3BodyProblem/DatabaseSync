@@ -75,12 +75,11 @@ int QuotationDatabase::ExecuteSql( const char* pszSqlCmd )
 {
 	if( NULL != m_pMysqlConnection && NULL != pszSqlCmd )
 	{
-		///<::printf( "%s\n", pszSqlCmd );
 		int	nRet = ::mysql_query( &m_oMySqlHandle, pszSqlCmd );
 
 		if( nRet < 0 )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::ExecuteSql() : [ERROR] %s", ::mysql_error( &m_oMySqlHandle ) );
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::ExecuteSql() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
 		}
 
 		return nRet;
@@ -128,8 +127,7 @@ int QuotationDatabase::Update_Commodity( short nExchangeID, const char* pszCode,
 		return -1024*2;
 	}
 
-	::printf( "%s\n", pszSqlCmd );
-
+	//::printf( "%s\n", pszSqlCmd );
 	return ExecuteSql( pszSqlCmd );
 }
 
