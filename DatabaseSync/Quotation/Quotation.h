@@ -166,12 +166,10 @@ protected:///< 加载市场行情数据
 	int							SaveCNFOPT();
 
 private:
-	CriticalObject				m_oLock;				///< 临界区对象
 	WorkStatus					m_vctMkSvrStatus[64];	///< 各市场服务状态
 	DataCollector				m_oQuotPlugin;			///< 行情插件
 	QuotationData				m_oQuoDataCenter;		///< 行情数据集合
 	WorkStatus					m_oWorkStatus;			///< 工作状态
-	std::map<int,int>			m_mapMkBuildTimeT;		///< 各市场码表构建时间记录(和当前时间小于3秒的都可以再重入进行初始化)
 	char*						m_pDataBuffer;			///< 数据缓存指针
 };
 

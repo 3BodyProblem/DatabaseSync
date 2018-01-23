@@ -230,7 +230,8 @@ public:
 	int							UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsigned int nSnapSize, T_TICK_LINE& refTickLine, unsigned int nTradeDate = 0 );
 
 protected:
-	static void*	__stdcall	ThreadSyncSnapshot( void* pSelf );			///< 日线落盘线程
+	static void*	__stdcall	ThreadSyncSnapshot( void* pSelf );			///< 更新快照数据
+	static void*	__stdcall	ThreadSyncNametable( void* pSelf );			///< 更新码表数据
 
 protected:
 	TMAP_MKID2STATUS			m_mapModuleStatus;				///< 模块状态表
@@ -246,7 +247,8 @@ protected:
 	T_MAP_QUO					m_mapCNF;						///< 商品期货(上海/郑州/大连)
 	T_MAP_QUO					m_mapCNFOPT;					///< 商品期权(上海/郑州/大连)
 protected:
-	SimpleThread				m_oThdTickDump;					///< Tick落盘数据
+	SimpleThread				m_oThdSnapSync;					///< 快照同步线程
+	SimpleThread				m_oThdNametableSync;			///< 码表同步线程
 };
 
 

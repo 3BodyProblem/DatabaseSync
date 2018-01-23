@@ -186,7 +186,6 @@ int Quotation::SaveShLv1()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_SH, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取上海的基础信息 --------------------------------------------
@@ -431,7 +430,6 @@ int Quotation::SaveShOpt()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_SHOPT, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取上海期权的基础信息 -----------------------------------------
@@ -600,7 +598,6 @@ int Quotation::SaveSzLv1()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_SZ, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取深圳的基础信息 --------------------------------------------
@@ -847,7 +844,6 @@ int Quotation::SaveSzOpt()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_SZOPT, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取深圳期权的基础信息 --------------------------------------------
@@ -1018,7 +1014,6 @@ int Quotation::SaveCFF()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_CF, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取中金期货的基础信息 --------------------------------------------
@@ -1191,7 +1186,6 @@ int Quotation::SaveCFFOPT()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_ZJOPT, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取中金期权的基础信息 --------------------------------------------
@@ -1335,7 +1329,6 @@ int Quotation::SaveCNF()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_CNF, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取商品期货的基础信息 --------------------------------------------
@@ -1510,7 +1503,6 @@ int Quotation::SaveCNFOPT()
 	int						nKindCount = 0;
 	XDFAPI_MarketKindInfo	vctKindInfo[32] = { 0 };
 	char					tempbuf[8192] = { 0 };
-	CriticalLock			section( m_oLock );
 	int						nErrorCode = m_oQuotPlugin->GetMarketInfo( XDF_CNFOPT, tempbuf, sizeof(tempbuf) );
 
 	///< -------------- 获取商品期权的基础信息 --------------------------------------------
@@ -1680,13 +1672,11 @@ int Quotation::SaveCNFOPT()
 
 bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nStatus )
 {
-	bool	bNormalStatus = false;
 	char	pszDesc[128] = { 0 };
 
-	if( XDF_CF == cMarket && nStatus >= 2 )		///< 此处为特别处理，中金期货不会有“可服务”状态的通知(BUG)
+	if( XDF_CF == cMarket && nStatus >= 2 )										///< 此处为特别处理，中金期货不会有“可服务”状态的通知(BUG)
 	{
 		nStatus = XRS_Normal;
-		bNormalStatus = true;
 	}
 
 	switch( nStatus )
@@ -1711,9 +1701,9 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 		break;
 	case 5:
 		{
-			bNormalStatus = true;
 			::strcpy( pszDesc, "可服务" );
 			ServerStatus::GetStatusObj().UpdateMkStatus( (enum XDFMarket)cMarket, "行情中" );
+			m_vctMkSvrStatus[cMarket] = ET_SS_INITIALIZING;						///< 设置“初始中”状态标识，以重新加载码表快照到数据库
 		}
 		break;
 	default:
@@ -1724,22 +1714,6 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 	///< 更新模块状态
 	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::XDF_OnRspStatusChanged() : Market(%d), Status=%s", (int)cMarket, pszDesc );
 	m_oQuoDataCenter.UpdateModuleStatus( (enum XDFMarket)cMarket, nStatus );	///< 更新模块工作状态
-
-	///< 判断是否需要重入加载过程
-	unsigned int	nNowT = ::time( NULL );
-	if( (nNowT - m_mapMkBuildTimeT[cMarket]) <= 3 )
-	{
-		return true;
-	}
-	else
-	{
-		m_mapMkBuildTimeT[cMarket] = nNowT;
-	}
-
-	if( true == bNormalStatus )					///< 为各市场设置“初始化”标记，以重新加载码表快照到数据库
-	{
-		m_vctMkSvrStatus[cMarket] = ET_SS_INITIALIZING;			///< 设置“初始中”状态标识
-	}
 
 	return true;
 }
@@ -1753,7 +1727,6 @@ void Quotation::SyncNametable2Database()
 
 		if( ET_SS_INITIALIZING == eModuleStatus )
 		{
-printf( "%d\n", DateTime::Now().TimeToLong() );
 			switch( (enum XDFMarket)nMkID )
 			{
 			case XDF_SH:		///< 上证L1
@@ -1792,7 +1765,6 @@ printf( "%d\n", DateTime::Now().TimeToLong() );
 			{
 				m_vctMkSvrStatus[nMkID] = ET_SS_WORKING;	///< 设置“可服务”状态标识
 			}
-printf( "%d\n", DateTime::Now().TimeToLong() );
 		}
 	}
 }

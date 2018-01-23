@@ -198,24 +198,32 @@ int QuotationData::Initialize( void* pQuotation )
 	Release();
 	m_pQuotation = pQuotation;
 
-	if( false == m_oThdTickDump.IsAlive() )
+	if( false == m_oThdSnapSync.IsAlive() )
 	{
-		if( 0 != m_oThdTickDump.Create( "ThreadSyncSnapshot()", ThreadSyncSnapshot, this ) ) {
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 create tick line thread(1)" );
+		if( 0 != m_oThdSnapSync.Create( "ThreadSyncSnapshot()", ThreadSyncSnapshot, this ) ) {
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 create snapshot thread" );
 			return -1;
+		}
+	}
+
+	if( false == m_oThdNametableSync.IsAlive() )
+	{
+		if( 0 != m_oThdSnapSync.Create( "ThreadSyncNametable()", ThreadSyncNametable, this ) ) {
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 create nametable thread" );
+			return -2;
 		}
 	}
 
 	if( 0 != QuotationDatabase::GetDbObj().Initialize() )
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 initialize QuotationDatabase obj." );
-		return -2;
+		return -3;
 	}
 
 	if( 0 != QuotationDatabase::GetDbObj().EstablishConnection() )
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 establish connection 4 QuotationDatabase obj." );
-		return -3;
+		return -4;
 	}
 
 	return 0;
@@ -263,10 +271,9 @@ void* QuotationData::ThreadSyncSnapshot( void* pSelf )
 	{
 		try
 		{
-			SimpleThread::Sleep( 500 );
-			refQuotation.SyncNametable2Database();				///< 更新市场码表、快照等初始化内容到数据库
-//			refQuotation.UpdateMarketsTime();					///< 更新各市场的日期和时间
-//			refQuotation.SyncSnapshot2Database();				///< 更新各市场行情数据到数据库
+			SimpleThread::Sleep( 1000 );
+			refQuotation.UpdateMarketsTime();					///< 更新各市场的日期和时间
+			refQuotation.SyncSnapshot2Database();				///< 更新各市场行情数据到数据库
 
 /*
 			char*					pBufPtr = CacheAlloc::GetObj().GetBufferPtr();
@@ -313,6 +320,31 @@ void* QuotationData::ThreadSyncSnapshot( void* pSelf )
 		catch( ... )
 		{
 			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadSyncSnapshot() : unknow exception" );
+		}
+	}
+
+	return NULL;
+}
+
+void* QuotationData::ThreadSyncNametable( void* pSelf )
+{
+	QuotationData&				refData = *(QuotationData*)pSelf;
+	Quotation&					refQuotation = *((Quotation*)refData.m_pQuotation);
+
+	while( false == SimpleThread::GetGlobalStopFlag() )
+	{
+		try
+		{
+			SimpleThread::Sleep( 1000 );
+			refQuotation.SyncNametable2Database();				///< 更新市场码表、快照等初始化内容到数据库
+		}
+		catch( std::exception& err )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadSyncNametable() : exception : %s", err.what() );
+		}
+		catch( ... )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadSyncNametable() : unknow exception" );
 		}
 	}
 
