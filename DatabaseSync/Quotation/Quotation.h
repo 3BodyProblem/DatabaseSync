@@ -90,7 +90,7 @@ public:
 	/**
 	 * @brief					更新获取所有市场的日期和时间
 	 */
-	void						UpdateMarketsTime();
+	void						SyncMarketsTime();
 
 	/**
 	 * @brief					将码表/快照等信息初始化到数据库

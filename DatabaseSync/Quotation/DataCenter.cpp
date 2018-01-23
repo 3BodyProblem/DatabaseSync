@@ -272,7 +272,7 @@ void* QuotationData::ThreadSyncSnapshot( void* pSelf )
 		try
 		{
 			SimpleThread::Sleep( 1000 );
-			refQuotation.UpdateMarketsTime();					///< 更新各市场的日期和时间
+			refQuotation.SyncMarketsTime();						///< 更新各市场的日期和时间
 			refQuotation.SyncSnapshot2Database();				///< 更新各市场行情数据到数据库
 
 /*

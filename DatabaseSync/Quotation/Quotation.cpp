@@ -2107,14 +2107,16 @@ void Quotation::SyncSnapshot2Database()
 
 }
 
-void Quotation::UpdateMarketsTime()
+void Quotation::SyncMarketsTime()
 {
 	QuotePrimeApi*			pQueryApi = m_oQuotPlugin.GetPrimeApi();
 	enum XDFMarket			vctMkID[] = { XDF_SH, XDF_SHOPT, XDF_SZ, XDF_SZOPT, XDF_CF, XDF_ZJOPT, XDF_CNF, XDF_CNFOPT };
 
 	if( NULL != pQueryApi )
 	{
-		for( int n = 0; n < 8; n++ )
+		unsigned int	nLoopCount = sizeof(vctMkID)/sizeof(enum XDFMarket);
+
+		for( int n = 0; n < nLoopCount; n++ )
 		{
 			int						nErrCode = 0;
 			char					nMkID = vctMkID[n];
