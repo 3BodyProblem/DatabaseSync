@@ -93,6 +93,11 @@ public:
 	void						UpdateMarketsTime();
 
 	/**
+	 * @brief					将码表/快照等信息初始化到数据库
+	 */
+	void						SyncNametable2Database();
+
+	/**
 	 * @brief					更新行情数据到数据库
 	 */
 	void						SyncSnapshot2Database();
@@ -106,67 +111,59 @@ public:///< 行情接口的回调函数
 protected:///< 加载市场行情数据
 	/**
 	 * @brief					加载上海Lv1的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveShLv1( enum XDFRunStat eStatus );
+	int							SaveShLv1();
 
 	/**
 	 * @brief					加载上海Option的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveShOpt( enum XDFRunStat eStatus );
+	int							SaveShOpt();
 
 	/**
 	 * @brief					加载深圳Lv1的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveSzLv1( enum XDFRunStat eStatus );
+	int							SaveSzLv1();
 
 	/**
 	 * @brief					加载深圳期权的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveSzOpt( enum XDFRunStat eStatus );
+	int							SaveSzOpt();
 
 	/**
 	 * @brief					加载中金期货的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCFF( enum XDFRunStat eStatus );
+	int							SaveCFF();
 
 	/**
 	 * @brief					加载中金期权的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCFFOPT( enum XDFRunStat eStatus );
+	int							SaveCFFOPT();
 
 	/**
 	 * @brief					加载商品期货的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCNF( enum XDFRunStat eStatus );
+	int							SaveCNF();
 
 	/**
 	 * @brief					加载商品期权的基础信息
-	 * @param[in]				eStatus		市场模块状态
 	 * @return					==0			成功
 								!=0			失败
 	 */
-	int							SaveCNFOPT( enum XDFRunStat eStatus );
+	int							SaveCNFOPT();
 
 private:
 	CriticalObject				m_oLock;				///< 临界区对象

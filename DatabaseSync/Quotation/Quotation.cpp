@@ -179,13 +179,8 @@ std::string& Quotation::QuoteApiVersion()
 	return m_oQuotPlugin.GetVersion();
 }
 
-int Quotation::SaveShLv1( enum XDFRunStat eStatus )
+int Quotation::SaveShLv1()
 {
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
-
 	int						nNum = 0;
 	int						nCodeCount = 0;
 	int						nKindCount = 0;
@@ -336,7 +331,6 @@ int Quotation::SaveShLv1( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_SH] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_StockData5) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -350,6 +344,7 @@ int Quotation::SaveShLv1( enum XDFRunStat eStatus )
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
+		QuotationDatabase::GetDbObj().StartTransaction();
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -415,6 +410,7 @@ int Quotation::SaveShLv1( enum XDFRunStat eStatus )
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		QuotationDatabase::GetDbObj().Commit();						///< 提交mysql事务
 	}
 
 	if( NULL != pszCodeBuf )
@@ -428,13 +424,8 @@ int Quotation::SaveShLv1( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveShOpt( enum XDFRunStat eStatus )
+int Quotation::SaveShOpt()
 {
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
-
 	int						nNum = 0;
 	int						nCodeCount = 0;
 	int						nKindCount = 0;
@@ -539,7 +530,6 @@ int Quotation::SaveShOpt( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_SHOPT] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_ShOptData) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -553,6 +543,7 @@ int Quotation::SaveShOpt( enum XDFRunStat eStatus )
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
+		QuotationDatabase::GetDbObj().StartTransaction();
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -588,6 +579,7 @@ int Quotation::SaveShOpt( enum XDFRunStat eStatus )
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		QuotationDatabase::GetDbObj().Commit();
 	}
 
 	if( NULL != pszCodeBuf )
@@ -601,13 +593,8 @@ int Quotation::SaveShOpt( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveSzLv1( enum XDFRunStat eStatus )
+int Quotation::SaveSzLv1()
 {
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
-
 	int						nNum = 0;
 	int						nCodeCount = 0;
 	int						nKindCount = 0;
@@ -758,7 +745,6 @@ int Quotation::SaveSzLv1( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_SZ] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_StockData5) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -772,6 +758,7 @@ int Quotation::SaveSzLv1( enum XDFRunStat eStatus )
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
+		QuotationDatabase::GetDbObj().StartTransaction();
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -839,6 +826,7 @@ int Quotation::SaveSzLv1( enum XDFRunStat eStatus )
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		QuotationDatabase::GetDbObj().Commit();
 	}
 
 	if( NULL != pszCodeBuf )
@@ -852,13 +840,8 @@ int Quotation::SaveSzLv1( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveSzOpt( enum XDFRunStat eStatus )
+int Quotation::SaveSzOpt()
 {
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
-
 	int						nNum = 0;
 	int						nCodeCount = 0;
 	int						nKindCount = 0;
@@ -962,7 +945,6 @@ int Quotation::SaveSzOpt( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_SZOPT] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_SzOptData) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -976,6 +958,7 @@ int Quotation::SaveSzOpt( enum XDFRunStat eStatus )
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
+		QuotationDatabase::GetDbObj().StartTransaction();
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -1013,6 +996,7 @@ int Quotation::SaveSzOpt( enum XDFRunStat eStatus )
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		QuotationDatabase::GetDbObj().Commit();
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1026,13 +1010,8 @@ int Quotation::SaveSzOpt( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveCFF( enum XDFRunStat eStatus )
+int Quotation::SaveCFF()
 {
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
-
 	int						nNum = 0;
 	std::ofstream			oDumper;
 	int						nCodeCount = 0;
@@ -1136,7 +1115,6 @@ int Quotation::SaveCFF( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_CF] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_CffexData) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -1150,6 +1128,7 @@ int Quotation::SaveCFF( enum XDFRunStat eStatus )
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
+		QuotationDatabase::GetDbObj().StartTransaction();
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -1189,6 +1168,7 @@ int Quotation::SaveCFF( enum XDFRunStat eStatus )
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		QuotationDatabase::GetDbObj().Commit();
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1202,13 +1182,9 @@ int Quotation::SaveCFF( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveCFFOPT( enum XDFRunStat eStatus )
+int Quotation::SaveCFFOPT()
 {
-	return 0;
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
+	return -1;
 
 	int						nNum = 0;
 	int						nCodeCount = 0;
@@ -1313,7 +1289,6 @@ int Quotation::SaveCFFOPT( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_ZJOPT] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_ZjOptData) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -1353,13 +1328,8 @@ int Quotation::SaveCFFOPT( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveCNF( enum XDFRunStat eStatus )
+int Quotation::SaveCNF()
 {
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
-
 	int						nNum = 0;
 	int						nCodeCount = 0;
 	int						nKindCount = 0;
@@ -1466,7 +1436,6 @@ int Quotation::SaveCNF( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_CNF] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_CNFutureData) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -1479,6 +1448,7 @@ int Quotation::SaveCNF( enum XDFRunStat eStatus )
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
+		QuotationDatabase::GetDbObj().StartTransaction();
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -1519,6 +1489,7 @@ int Quotation::SaveCNF( enum XDFRunStat eStatus )
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		QuotationDatabase::GetDbObj().Commit();
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1532,13 +1503,8 @@ int Quotation::SaveCNF( enum XDFRunStat eStatus )
 	return 0;
 }
 
-int Quotation::SaveCNFOPT( enum XDFRunStat eStatus )
+int Quotation::SaveCNFOPT()
 {
-	if( XRS_Normal != eStatus )
-	{
-		return -1;
-	}
-
 	int						nNum = 0;
 	int						nCodeCount = 0;
 	int						nKindCount = 0;
@@ -1645,7 +1611,6 @@ int Quotation::SaveCNFOPT( enum XDFRunStat eStatus )
 		return -3;
 	}
 
-	m_vctMkSvrStatus[XDF_CNFOPT] = ET_SS_WORKING;				///< 设置“可服务”状态标识
 	nNum = 0;
 	///< ---------------- 获取快照表数据 -------------------------------------------
 	int		noffset = (sizeof(XDFAPI_CNFutOptData) + sizeof(XDFAPI_UniMsgHead)) * nCodeCount;	///< 根据商品数量，分配获取快照表需要的缓存
@@ -1659,6 +1624,7 @@ int Quotation::SaveCNFOPT( enum XDFRunStat eStatus )
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
+		QuotationDatabase::GetDbObj().StartTransaction();
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -1698,6 +1664,7 @@ int Quotation::SaveCNFOPT( enum XDFRunStat eStatus )
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		QuotationDatabase::GetDbObj().Commit();
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1758,9 +1725,6 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::XDF_OnRspStatusChanged() : Market(%d), Status=%s", (int)cMarket, pszDesc );
 	m_oQuoDataCenter.UpdateModuleStatus( (enum XDFMarket)cMarket, nStatus );	///< 更新模块工作状态
 
-	static CriticalObject	oLock;				///< 临界区对象
-	CriticalLock			section( oLock );
-
 	///< 判断是否需要重入加载过程
 	unsigned int	nNowT = ::time( NULL );
 	if( (nNowT - m_mapMkBuildTimeT[cMarket]) <= 3 )
@@ -1772,47 +1736,64 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 		m_mapMkBuildTimeT[cMarket] = nNowT;
 	}
 
-	///< 加载各市场基础信息
-	if( true == bNormalStatus )
+	if( true == bNormalStatus )					///< 为各市场设置“初始化”标记，以重新加载码表快照到数据库
 	{
 		m_vctMkSvrStatus[cMarket] = ET_SS_INITIALIZING;			///< 设置“初始中”状态标识
-
-		switch( (enum XDFMarket)cMarket )
-		{
-		case XDF_SH:		///< 上证L1
-			SaveShLv1( (enum XDFRunStat)nStatus );
-			break;
-		case XDF_SHL2:		///< 上证L2(QuoteClientApi内部屏蔽)
-			break;
-		case XDF_SHOPT:		///< 上证期权
-			SaveShOpt( (enum XDFRunStat)nStatus );
-			break;
-		case XDF_SZ:		///< 深证L1
-			SaveSzLv1( (enum XDFRunStat)nStatus );
-			break;
-		case XDF_SZOPT:		///< 深圳期权
-			SaveSzOpt( (enum XDFRunStat)nStatus );
-			break;
-		case XDF_SZL2:		///< 深圳L2(QuoteClientApi内部屏蔽)
-			break;
-		case XDF_CF:		///< 中金期货
-			SaveCFF( (enum XDFRunStat)nStatus );
-			break;
-		case XDF_ZJOPT:		///< 中金期权
-			SaveCFFOPT( (enum XDFRunStat)nStatus );
-			break;
-		case XDF_CNF:		///< 商品期货(上海/郑州/大连)
-			SaveCNF( (enum XDFRunStat)nStatus );
-			break;
-		case XDF_CNFOPT:	///< 商品期货和商品期权(上海/郑州/大连)
-			SaveCNFOPT( (enum XDFRunStat)nStatus );
-			break;
-		default:
-			return false;
-		}
 	}
 
 	return true;
+}
+
+void Quotation::SyncNametable2Database()
+{
+	for( int nMkID = 0; nMkID < 64; nMkID++ )
+	{
+		int					nErrorCode = 0;
+		enum E_SS_Status	eModuleStatus = m_vctMkSvrStatus[nMkID];
+
+		if( ET_SS_INITIALIZING == eModuleStatus )
+		{
+			switch( (enum XDFMarket)nMkID )
+			{
+			case XDF_SH:		///< 上证L1
+				nErrorCode = SaveShLv1();
+				break;
+			case XDF_SHL2:		///< 上证L2(QuoteClientApi内部屏蔽)
+				break;
+			case XDF_SHOPT:		///< 上证期权
+				nErrorCode = SaveShOpt();
+				break;
+			case XDF_SZ:		///< 深证L1
+				nErrorCode = SaveSzLv1();
+				break;
+			case XDF_SZOPT:		///< 深圳期权
+				nErrorCode = SaveSzOpt();
+				break;
+			case XDF_SZL2:		///< 深圳L2(QuoteClientApi内部屏蔽)
+				break;
+			case XDF_CF:		///< 中金期货
+				nErrorCode = SaveCFF();
+				break;
+			case XDF_ZJOPT:		///< 中金期权
+				nErrorCode = SaveCFFOPT();
+				break;
+			case XDF_CNF:		///< 商品期货(上海/郑州/大连)
+				nErrorCode = SaveCNF();
+				break;
+			case XDF_CNFOPT:	///< 商品期货和商品期权(上海/郑州/大连)
+				nErrorCode = SaveCNFOPT();
+				break;
+			default:
+				continue;
+			}
+
+			if( 0 == nErrorCode )
+			{
+				m_vctMkSvrStatus[nMkID] = ET_SS_WORKING;	///< 设置“可服务”状态标识
+			}
+		}
+
+	}
 }
 
 void Quotation::SyncSnapshot2Database()
@@ -1827,6 +1808,9 @@ void Quotation::SyncSnapshot2Database()
 	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SH ) )
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SH, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().StartTransaction();
+		}
 		for( int m = 0; m < nErrorCode; )
 		{
 			XDFAPI_UniMsgHead*	pMsgHead = (XDFAPI_UniMsgHead*)(m_pDataBuffer+m);
@@ -1866,11 +1850,17 @@ void Quotation::SyncSnapshot2Database()
 
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().Commit();
+		}
 	}
 
 	///< ---------------- Shanghai Option Snapshot -------------------------------------------
 	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SHOPT ) )
 	{
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().StartTransaction();
+		}
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SHOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -1905,11 +1895,17 @@ void Quotation::SyncSnapshot2Database()
 
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().Commit();
+		}
 	}
 
 	///< ---------------- Shenzheng Lv1 Snapshot -------------------------------------------
 	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SZ ) )
 	{
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().StartTransaction();
+		}
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SZ, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -1951,11 +1947,17 @@ void Quotation::SyncSnapshot2Database()
 
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().Commit();
+		}
 	}
 
 	///< ---------------- Shenzheng Option Snapshot -------------------------------------------
 	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SZOPT ) )
 	{
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().StartTransaction();
+		}
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SZOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -1990,11 +1992,17 @@ void Quotation::SyncSnapshot2Database()
 
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().Commit();
+		}
 	}
 
 	///< ---------------- CFF Future Snapshot -------------------------------------------
 	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CF ) )
 	{
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().StartTransaction();
+		}
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CF, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -2029,11 +2037,17 @@ void Quotation::SyncSnapshot2Database()
 
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().Commit();
+		}
 	}
 
 	///< ---------------- CFF Future Snapshot -------------------------------------------
 	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CNF ) )
 	{
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().StartTransaction();
+		}
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CNF, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -2068,11 +2082,17 @@ void Quotation::SyncSnapshot2Database()
 
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().Commit();
+		}
 	}
 
 	///< ---------------- CFF Option Snapshot -------------------------------------------
 	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CNFOPT ) )
 	{
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().StartTransaction();
+		}
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CNFOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -2106,6 +2126,9 @@ void Quotation::SyncSnapshot2Database()
 			}
 
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
+		}
+		if( nErrorCode > 0 ) {
+			QuotationDatabase::GetDbObj().Commit();
 		}
 	}
 

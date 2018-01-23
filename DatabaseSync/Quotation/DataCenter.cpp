@@ -264,8 +264,9 @@ void* QuotationData::ThreadDumpTickLine( void* pSelf )
 		try
 		{
 			SimpleThread::Sleep( 500 );
+			refQuotation.SyncNametable2Database();				///< 更新市场码表、快照等初始化内容到数据库
 			refQuotation.UpdateMarketsTime();					///< 更新各市场的日期和时间
-			refQuotation.SyncSnapshot2Database();
+			refQuotation.SyncSnapshot2Database();				///< 更新各市场行情数据到数据库
 
 /*
 			char*					pBufPtr = CacheAlloc::GetObj().GetBufferPtr();

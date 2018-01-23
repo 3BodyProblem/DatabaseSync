@@ -88,6 +88,41 @@ int QuotationDatabase::ExecuteSql( const char* pszSqlCmd )
 	return -1024;
 }
 
+int QuotationDatabase::StartTransaction()
+{
+	if( NULL != m_pMysqlConnection )
+	{
+		int	nRet = ::mysql_query( &m_oMySqlHandle, "BEGIN TRANSACTION;" );
+
+		if( nRet < 0 )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::StartTransaction() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
+		}
+
+		return nRet;
+	}
+
+	return -1024;
+}
+
+int QuotationDatabase::Commit()
+{
+	if( NULL != m_pMysqlConnection )
+	{
+		int	nRet = ::mysql_commit( &m_oMySqlHandle );
+		//int	nRet = ::mysql_query( &m_oMySqlHandle, "COMMIT;" );
+
+		if( nRet < 0 )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Commit() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
+		}
+
+		return nRet;
+	}
+
+	return -1024;
+}
+
 int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, const char* pszCode, const char* pszName
 										, int nLotSize, int nContractMulti, double dPriceTick, double dPreClose, double dPreSettle
 										, double dUpperPrice, double dLowerPrice, double dPrice, double dOpenPrice, double dSettlePrice
@@ -109,6 +144,7 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 		return -1024*2;
 	}
 
+	::printf( "%s\n", pszSqlCmd );
 	return ExecuteSql( pszSqlCmd );
 }
 
@@ -119,7 +155,7 @@ int QuotationDatabase::Update_Commodity( short nExchangeID, const char* pszCode,
 	char		pszSqlCmd[1024*2] = { 0 };
 
 	if( 0 >= ::sprintf( pszSqlCmd
-					, "UPDATE commodity SET preClose=%f,preSettle=%f,upperPrice=%f,lowerPrice=%f,price=%f,openPrice=%f,settlementPrice=%f,closePrice=%f,bid1=%f,ask1=%f,highPrice=%f,lowPrice=%f,uplowPercent=%f,volume=%I64d,nowVolumn=%d,amount=%f,isTrading=%d,addTime=now(),updatetime=now() WHERE exchange=%d AND code=\'%s\';"
+					, "UPDATE commodity SET preClose=%f,preSettle=%f,upperPrice=%f,lowerPrice=%f,price=%f,openPrice=%f,settlementPrice=%f,closePrice=%f,bid1=%f,ask1=%f,highPrice=%f,lowPrice=%f,uplowPercent=%f,volume=%I64d,nowVolumn=%d,amount=%f,isTrading=%d,updatetime=now() WHERE exchange=%d AND code=\'%s\';"
 					, dPreClosePx, dPreSettlePx, dUpperPx, dLowerPx, dLastPx, dOpenPx, dSettlePx, dClosePx, dBid1Px, dAsk1Px, dHighPx, dLowPx, dFluctuationPercent, nVolume, nTradingVolume, dAmount, nIsTrading
 					, nExchangeID, pszCode ) )
 	{
