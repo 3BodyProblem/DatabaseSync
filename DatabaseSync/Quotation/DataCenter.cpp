@@ -200,7 +200,7 @@ int QuotationData::Initialize( void* pQuotation )
 
 	if( false == m_oThdTickDump.IsAlive() )
 	{
-		if( 0 != m_oThdTickDump.Create( "ThreadDumpTickLine()", ThreadDumpTickLine, this ) ) {
+		if( 0 != m_oThdTickDump.Create( "ThreadSyncSnapshot()", ThreadSyncSnapshot, this ) ) {
 			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 create tick line thread(1)" );
 			return -1;
 		}
@@ -254,7 +254,7 @@ void QuotationData::UpdateModuleStatus( enum XDFMarket eMarket, int nStatus )
 	m_mapModuleStatus[eMarket] = nStatus;
 }
 
-void* QuotationData::ThreadDumpTickLine( void* pSelf )
+void* QuotationData::ThreadSyncSnapshot( void* pSelf )
 {
 	QuotationData&				refData = *(QuotationData*)pSelf;
 	Quotation&					refQuotation = *((Quotation*)refData.m_pQuotation);
@@ -265,8 +265,8 @@ void* QuotationData::ThreadDumpTickLine( void* pSelf )
 		{
 			SimpleThread::Sleep( 500 );
 			refQuotation.SyncNametable2Database();				///< 更新市场码表、快照等初始化内容到数据库
-			refQuotation.UpdateMarketsTime();					///< 更新各市场的日期和时间
-			refQuotation.SyncSnapshot2Database();				///< 更新各市场行情数据到数据库
+//			refQuotation.UpdateMarketsTime();					///< 更新各市场的日期和时间
+//			refQuotation.SyncSnapshot2Database();				///< 更新各市场行情数据到数据库
 
 /*
 			char*					pBufPtr = CacheAlloc::GetObj().GetBufferPtr();
@@ -308,11 +308,11 @@ void* QuotationData::ThreadDumpTickLine( void* pSelf )
 		}
 		catch( std::exception& err )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadDumpTickLine() : exception : %s", err.what() );
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadSyncSnapshot() : exception : %s", err.what() );
 		}
 		catch( ... )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadDumpTickLine() : unknow exception" );
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadSyncSnapshot() : unknow exception" );
 		}
 	}
 

@@ -1753,6 +1753,7 @@ void Quotation::SyncNametable2Database()
 
 		if( ET_SS_INITIALIZING == eModuleStatus )
 		{
+printf( "%d\n", DateTime::Now().TimeToLong() );
 			switch( (enum XDFMarket)nMkID )
 			{
 			case XDF_SH:		///< 上证L1
@@ -1791,8 +1792,8 @@ void Quotation::SyncNametable2Database()
 			{
 				m_vctMkSvrStatus[nMkID] = ET_SS_WORKING;	///< 设置“可服务”状态标识
 			}
+printf( "%d\n", DateTime::Now().TimeToLong() );
 		}
-
 	}
 }
 
@@ -1805,7 +1806,7 @@ void Quotation::SyncSnapshot2Database()
 	}
 
 	///< ---------------- Shanghai Lv1 Snapshot -------------------------------------------
-	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SH ) )
+	if( ET_SS_WORKING == m_vctMkSvrStatus[XDF_SH] )
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SH, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
 		if( nErrorCode > 0 ) {
@@ -1856,7 +1857,7 @@ void Quotation::SyncSnapshot2Database()
 	}
 
 	///< ---------------- Shanghai Option Snapshot -------------------------------------------
-	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SHOPT ) )
+	if( ET_SS_WORKING == m_vctMkSvrStatus[XDF_SHOPT] )
 	{
 		if( nErrorCode > 0 ) {
 			QuotationDatabase::GetDbObj().StartTransaction();
@@ -1901,7 +1902,7 @@ void Quotation::SyncSnapshot2Database()
 	}
 
 	///< ---------------- Shenzheng Lv1 Snapshot -------------------------------------------
-	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SZ ) )
+	if( ET_SS_WORKING == m_vctMkSvrStatus[XDF_SZ] )
 	{
 		if( nErrorCode > 0 ) {
 			QuotationDatabase::GetDbObj().StartTransaction();
@@ -1953,7 +1954,7 @@ void Quotation::SyncSnapshot2Database()
 	}
 
 	///< ---------------- Shenzheng Option Snapshot -------------------------------------------
-	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_SZOPT ) )
+	if( ET_SS_WORKING == m_vctMkSvrStatus[XDF_SZOPT] )
 	{
 		if( nErrorCode > 0 ) {
 			QuotationDatabase::GetDbObj().StartTransaction();
@@ -1998,7 +1999,7 @@ void Quotation::SyncSnapshot2Database()
 	}
 
 	///< ---------------- CFF Future Snapshot -------------------------------------------
-	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CF ) )
+	if( ET_SS_WORKING == m_vctMkSvrStatus[XDF_CF] )
 	{
 		if( nErrorCode > 0 ) {
 			QuotationDatabase::GetDbObj().StartTransaction();
@@ -2042,8 +2043,8 @@ void Quotation::SyncSnapshot2Database()
 		}
 	}
 
-	///< ---------------- CFF Future Snapshot -------------------------------------------
-	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CNF ) )
+	///< ---------------- CNF Future Snapshot -------------------------------------------
+	if( ET_SS_WORKING == m_vctMkSvrStatus[XDF_CNF] )
 	{
 		if( nErrorCode > 0 ) {
 			QuotationDatabase::GetDbObj().StartTransaction();
@@ -2087,8 +2088,8 @@ void Quotation::SyncSnapshot2Database()
 		}
 	}
 
-	///< ---------------- CFF Option Snapshot -------------------------------------------
-	if( 5 == m_oQuoDataCenter.GetModuleStatus( XDF_CNFOPT ) )
+	///< ---------------- CNF Option Snapshot -------------------------------------------
+	if( ET_SS_WORKING == m_vctMkSvrStatus[XDF_CNFOPT] )
 	{
 		if( nErrorCode > 0 ) {
 			QuotationDatabase::GetDbObj().StartTransaction();

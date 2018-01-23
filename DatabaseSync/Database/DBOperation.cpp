@@ -144,7 +144,7 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 		return -1024*2;
 	}
 
-	::printf( "%s\n", pszSqlCmd );
+	//::printf( "%s\n", pszSqlCmd );
 	return ExecuteSql( pszSqlCmd );
 }
 

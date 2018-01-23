@@ -230,8 +230,7 @@ public:
 	int							UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsigned int nSnapSize, T_TICK_LINE& refTickLine, unsigned int nTradeDate = 0 );
 
 protected:
-	static void*	__stdcall	ThreadDumpTickLine( void* pSelf );			///< 日线落盘线程
-	static void*	__stdcall	ThreadOnIdle( void* pSelf );				///< 空闲线程
+	static void*	__stdcall	ThreadSyncSnapshot( void* pSelf );			///< 日线落盘线程
 
 protected:
 	TMAP_MKID2STATUS			m_mapModuleStatus;				///< 模块状态表
