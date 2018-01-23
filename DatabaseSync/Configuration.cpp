@@ -150,6 +150,7 @@ bool MkCfgWriter::ConfigurateConnection4Mk( unsigned int nIndication, std::strin
 
 
 Configuration::Configuration()
+ : m_nDBPort( 5873 )
 {
 	///< 配置各市场的传输驱动所在目录名称
 	m_vctMkNameCfg.push_back( "cff_setting" );
@@ -208,16 +209,38 @@ int Configuration::Initialize()
 		return -1;
 	}
 
-	///< 设置： 快照落盘目录(含文件名)
-	m_sDumpFileFolder = oIniFile.getStringValue( std::string("SRV"), std::string("DumpFolder"), nErrCode );
-	if( 0 != nErrCode )	{
-		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : shutdown dump function." );
-	}
-
+	///< 行情插件加载地址
 	m_sQuoPluginPath = oIniFile.getStringValue( std::string("SRV"), std::string("QuoPlugin"), nErrCode );
 	if( 0 != nErrCode )	{
 		m_sQuoPluginPath = "./QuoteClientApi.dll";
 		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : default quotation plugin path: %s", m_sQuoPluginPath.c_str() );
+	}
+
+	///< Mysql配置信息
+	m_sDBHost = oIniFile.getStringValue( std::string("MYSQL"), std::string("DBHost"), nErrCode );
+	if( 0 != nErrCode )	{
+		m_sDBHost = "127.0.0.1";
+		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : default mysql host: %s", m_sDBHost.c_str() );
+	}
+	m_sDBUser = oIniFile.getStringValue( std::string("MYSQL"), std::string("DBUser"), nErrCode );
+	if( 0 != nErrCode )	{
+		m_sDBUser = "default";
+		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : default mysql login account: %s", m_sDBUser.c_str() );
+	}
+	m_sDBPswd = oIniFile.getStringValue( std::string("MYSQL"), std::string("DBPswd"), nErrCode );
+	if( 0 != nErrCode )	{
+		m_sDBPswd = "default";
+		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : default mysql login password: %s", m_sDBPswd.c_str() );
+	}
+	m_sDBTable = oIniFile.getStringValue( std::string("MYSQL"), std::string("DBTable"), nErrCode );
+	if( 0 != nErrCode )	{
+		m_sDBTable = "defaulttable";
+		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : default mysql table: %s", m_sDBTable.c_str() );
+	}
+	m_nDBPort = oIniFile.getIntValue( std::string("MYSQL"), std::string("DBPort"), nErrCode );
+	if( 0 != nErrCode )	{
+		m_nDBPort = 31256;
+		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : default mysql port: %d", m_nDBPort );
 	}
 
 	///< 每个市场的缓存中，可以缓存的tick数据的数量
@@ -226,17 +249,6 @@ int Configuration::Initialize()
 		s_nNumberInSection = nNum4OneMarket;
 	}
 	QuoCollector::GetCollector()->OnLog( TLV_INFO, "Configuration::Initialize() : Setting Item Number ( = %d) In One Market Buffer ...", s_nNumberInSection );
-
-	///< 设置财经数据 和 权息文件 的配置路径
-	m_sFinancialFolder = oIniFile.getStringValue( std::string("DataSource"), std::string("FinancialData"), nErrCode );
-	if( 0 != nErrCode )	{
-		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : financial file isn\'t exist..." );
-	}
-
-	m_sWeightFolder = oIniFile.getStringValue( std::string("DataSource"), std::string("Weight"), nErrCode );
-	if( 0 != nErrCode )	{
-		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : weight file isn\'t exist..." );
-	}
 
 	///< 转存各市场的配置到对应的文件 && 解析出需要被监控的各市场的代码
 	ParseAndSaveMkConfig( oIniFile );
@@ -276,19 +288,29 @@ const std::string& Configuration::GetDataCollectorPluginPath() const
 	return m_sQuoPluginPath;
 }
 
-const std::string& Configuration::GetDumpFolder() const
+const std::string& Configuration::GetDbHost()
 {
-	return m_sDumpFileFolder;
+	return m_sDBHost;
 }
 
-std::string Configuration::GetFinancialDataFolder() const
+const std::string& Configuration::GetDbAccount()
 {
-	return m_sFinancialFolder;
+	return m_sDBUser;
 }
 
-std::string Configuration::GetWeightFileFolder() const
+const std::string& Configuration::GetDbPassword()
 {
-	return m_sWeightFolder;
+	return m_sDBPswd;
+}
+
+const std::string& Configuration::GetDbTableName()
+{
+	return m_sDBTable;
+}
+
+unsigned short Configuration::GetDbPort()
+{
+	return m_nDBPort;
 }
 
 

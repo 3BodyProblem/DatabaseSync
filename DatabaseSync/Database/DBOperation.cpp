@@ -46,7 +46,13 @@ int QuotationDatabase::EstablishConnection()
 {
 	QuoCollector::GetCollector()->OnLog( TLV_INFO, "QuotationDatabase::EstablishConnection() : building database connection ......" );
 
-	m_pMysqlConnection = ::mysql_real_connect( &m_oMySqlHandle, "192.168.3.171", "potc", "potc", "potc", 5873, NULL, 0 );
+	m_pMysqlConnection = ::mysql_real_connect( &m_oMySqlHandle
+											, Configuration::GetConfig().GetDbHost().c_str()
+											, Configuration::GetConfig().GetDbAccount().c_str()
+											, Configuration::GetConfig().GetDbPassword().c_str()
+											, Configuration::GetConfig().GetDbTableName().c_str()
+											, Configuration::GetConfig().GetDbPort()
+											, NULL, 0 );
 
 	if( NULL == m_pMysqlConnection )
 	{
@@ -56,7 +62,7 @@ int QuotationDatabase::EstablishConnection()
 
 	QuoCollector::GetCollector()->OnLog( TLV_INFO, "QuotationDatabase::EstablishConnection() : database connection has been established ......" );
 
-	if( 0 != ::mysql_select_db( &m_oMySqlHandle, "potc" ) )
+	if( 0 != ::mysql_select_db( &m_oMySqlHandle, Configuration::GetConfig().GetDbTableName().c_str() ) )
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 select table, (%s) ......", ::mysql_error( &m_oMySqlHandle ) );
 		return -2;

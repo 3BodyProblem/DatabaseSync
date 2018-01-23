@@ -80,24 +80,34 @@ public:
 
 public:
 	/**
-	 * @brief					取得快照落盘目录(含文件名)
+	 * @brief					获取数据库名
 	 */
-	const std::string&			GetDumpFolder() const;
+	const std::string&			GetDbHost();
+
+	/**
+	 * @brief					获取数据库帐号
+	 */
+	const std::string&			GetDbAccount();
+
+	/**
+	 * @brief					获取数据库密码
+	 */
+	const std::string&			GetDbPassword();
+
+	/**
+	 * @brief					获取数据表名
+	 */
+	const std::string&			GetDbTableName();
+
+	/**
+	 * @brief					获取数据库端口
+	 */
+	unsigned short				GetDbPort();
 
 	/**
 	 * @brief					获取插件加载路径(含文件名)
 	 */
 	const std::string&			GetDataCollectorPluginPath() const;
-
-	/**
-	 * @brief					获取请求文件的路径
-	 */
-	std::string					GetFinancialDataFolder() const;
-
-	/**
-	 * @brief					获取行情文件的路径
-	 */
-	std::string					GetWeightFileFolder() const;
 
 protected:
 	/**
@@ -110,11 +120,12 @@ protected:
 	std::vector<std::string>	m_vctMkNameCfg;				///< 市场名称列表
 
 private:
-	std::string					m_sFinancialFolder;			///< 财经文件路径
-	std::string					m_sWeightFolder;			///< 权息文件路径
 	std::string					m_sQuoPluginPath;			///< 行情插件路径
-	std::string					m_sDumpFileFolder;			///< 快照落盘路径(需要有文件名)
-	MAP_MK_CLOSECFG				m_mapMkCloseCfg;			///< 市场收盘时间配置
+	std::string					m_sDBHost;					///< mysql地址
+	std::string					m_sDBUser;					///< mysql用户
+	std::string					m_sDBPswd;					///< mysql密码
+	std::string					m_sDBTable;					///< mysql写入表
+	unsigned short				m_nDBPort;					///< mysql端口
 };
 
 
