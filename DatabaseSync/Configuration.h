@@ -50,8 +50,42 @@ typedef struct
 } CLOSE_CFG;
 
 
-typedef std::vector<CLOSE_CFG>			TB_MK_CLOSECFG;				///< 市场收盘配置表
-typedef std::map<short,TB_MK_CLOSECFG>	MAP_MK_CLOSECFG;			///< 各市场收盘配置
+typedef std::vector<CLOSE_CFG>				TB_MK_CLOSECFG;			///< 市场收盘配置表
+typedef std::map<short,TB_MK_CLOSECFG>		MAP_MK_CLOSECFG;		///< 各市场收盘配置
+typedef std::map<std::string,std::string>	MAP_CODE4SHORT;			///< 代码到简称的映射表
+
+
+/**
+ * @class						ShortSpell
+ * @brief						简称映射类
+ * @author						barry
+ */
+class ShortSpell
+{
+private:
+	ShortSpell();
+
+public:
+	static ShortSpell&			GetObj();
+
+	/**
+	 * @brief					从本地文件加载配置数据
+	 * @return					==0							加载，成功
+								!=0							加载，失败
+	 */
+	int							LoadFromCSV();
+
+	/**
+	 * @brief					根据商品代码返回简拼
+	 * @param[in]				sCode						商品代码(前缀为市场代号，比如 SH.600000)
+	 * @param[in]				sName						商品名称(以未查询到对应配置的情况下，拿sName进行实时计算商品简拼)
+	 * @return					返回商品简拼
+	 */
+	std::string					GetShortSpell( std::string sCode, std::string sName );
+
+protected:
+	MAP_CODE4SHORT				m_mapCode2ShortSpell;		///< 商品代码到简称的映射(SH.600000,PFYH)
+};
 
 
 /**
@@ -118,8 +152,6 @@ protected:
 
 protected:
 	std::vector<std::string>	m_vctMkNameCfg;				///< 市场名称列表
-
-private:
 	std::string					m_sQuoPluginPath;			///< 行情插件路径
 	std::string					m_sDBHost;					///< mysql地址
 	std::string					m_sDBUser;					///< mysql用户

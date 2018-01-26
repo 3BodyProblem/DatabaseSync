@@ -3,6 +3,7 @@
 #include "DatabaseSync.h"
 #include "Configuration.h"
 #include "Quotation/SvrStatus.h"
+#include "Database/QLMatchCH.h"
 
 
 char*	__BasePath(char *in)
@@ -146,6 +147,81 @@ bool MkCfgWriter::ConfigurateConnection4Mk( unsigned int nIndication, std::strin
 	}
 
 	return true;
+}
+
+
+ShortSpell::ShortSpell()
+{
+	m_mapCode2ShortSpell.clear();
+}
+
+ShortSpell& ShortSpell::GetObj()
+{
+	static ShortSpell		obj;
+
+	return obj;
+}
+
+int ShortSpell::LoadFromCSV()
+{
+	std::ifstream			objCSV;
+	unsigned int			nCodeCount = 0;
+
+	objCSV.open( "shortspell.csv" );
+	if( !objCSV.is_open() )
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "ShortSpell::LoadFromCSV() : failed 2 load data from shortspell.csv" );
+		return -1;
+	}
+
+	while( true )
+	{
+		char			pszLine[1024] = { 0 };
+
+		if( !objCSV.getline( pszLine, sizeof(pszLine) ) ) {
+			break;
+		}
+
+		int				nLen = ::strlen( pszLine );
+
+		for( int n = 0; n < nLen; n++ )
+		{
+			if( ',' == pszLine[n] )
+			{
+				std::string		sKey( pszLine, n );
+				std::string		sValue( pszLine + n + 1, nLen - n );
+
+				m_mapCode2ShortSpell[sKey] = sValue;
+			}
+		}
+
+		nCodeCount++;
+	}
+
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "ShortSpell::LoadFromCSV() : load code number = %u", nCodeCount );
+
+	return 0;
+}
+
+std::string ShortSpell::GetShortSpell( std::string sCode, std::string sName )
+{
+	char						pszSpell[218] = { 0 };
+	MAP_CODE4SHORT::iterator	it = m_mapCode2ShortSpell.find( sCode );
+
+	if( it != m_mapCode2ShortSpell.end() )
+	{
+		return it->second;
+	}
+
+/*	if( false == CQLMatchCH::GetFirstPinYin( (const TCHAR*)sName.c_str(), (TCHAR*)pszSpell ) )
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "ShortSpell::GetShortSpell() : failed 2 convert name 2 spell" );
+		return "";
+	}
+	else*/
+	{
+		return pszSpell;
+	}
 }
 
 
