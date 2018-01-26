@@ -2,17 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+
 #include "QLMatchCH.h"
-#include "QWin.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
+#include "../Configuration.h"
 #pragma  warning(disable:4996)
+
 
 #define PINYINNAME _T("PinYin")
 #define PINYINEXT _T("py")
@@ -200,7 +194,7 @@ bool CQLMatchCH::ReadPYIdxFile()
 	TCHAR dllpath[MAX_PATH], drv[_MAX_DRIVE], dir[_MAX_DIR], fn[_MAX_FNAME], ext[_MAX_EXT];
 	TCHAR sortpath[MAX_PATH];
 
-	GetModuleFileName(theApp.m_hInstance, dllpath, MAX_PATH);
+	GetModuleFileName(g_oModule, dllpath, MAX_PATH);
 
 	_tsplitpath(dllpath, drv, dir, fn, ext);
 
@@ -252,7 +246,7 @@ bool CQLMatchCH::ReadSortFile()
 	TCHAR dllpath[MAX_PATH], drv[_MAX_DRIVE], dir[_MAX_DIR], fn[_MAX_FNAME], ext[_MAX_EXT];
 	TCHAR sortpath[MAX_PATH];
 
-	GetModuleFileName(theApp.m_hInstance, dllpath, MAX_PATH);
+	GetModuleFileName(g_oModule, dllpath, MAX_PATH);
 
 	_tsplitpath(dllpath, drv, dir, fn, ext);
 
@@ -280,7 +274,7 @@ BOOL CQLMatchCH::InitStaticData()
 	{
 		m_bInit = true;
 		TCHAR respath[QL_MAX_PATH], respath2[QL_MAX_PATH], dllpath[QL_MAX_PATH], drv[_MAX_DRIVE], dir[QL_MAX_PATH], fn[_MAX_FNAME], ext[_MAX_EXT];
-		::GetModuleFileName(theApp.m_hInstance, dllpath, QL_MAX_PATH-1);
+		::GetModuleFileName(g_oModule, dllpath, QL_MAX_PATH-1);
 		_tsplitpath(dllpath, drv, dir, fn, ext);
 
 		//∂¡»°∆¥“Ù”≥…‰±Ì

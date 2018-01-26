@@ -314,6 +314,14 @@
 				RelativePath=".\Database\DBOperation.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Database\QLMatchCH.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Database\QLMatchCH.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\Configuration.cpp"

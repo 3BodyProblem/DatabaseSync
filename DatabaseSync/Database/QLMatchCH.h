@@ -9,6 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <vector>
+#include <tchar.h>
+#include <windows.h>
+
+using namespace std;
+
 class CQLMatchCH  
 {
 public:

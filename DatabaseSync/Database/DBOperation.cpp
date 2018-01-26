@@ -1,4 +1,5 @@
 #pragma warning(disable : 4996)
+#include "QLMatchCH.h"
 #include "DBOperation.h"
 #include "../DatabaseSync.h"
 
@@ -28,6 +29,12 @@ int QuotationDatabase::Initialize()
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 call func. ::mysql_init(), %s", ::mysql_error( &m_oMySqlHandle ) );
 		return -1;
+	}
+
+	if( FALSE == CQLMatchCH::InitStaticData() )
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 initialize QLMatchCH library" );
+		return -2;
 	}
 
 	return 0;
