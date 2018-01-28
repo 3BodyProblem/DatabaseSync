@@ -237,6 +237,9 @@ Configuration::Configuration()
 	m_vctMkNameCfg.push_back( "shopt_setting" );
 	m_vctMkNameCfg.push_back( "sz_setting" );
 	m_vctMkNameCfg.push_back( "szopt_setting" );
+
+	m_mapMkID2TypeSet[XDF_SH].insert( 0 );
+	m_mapMkID2TypeSet[XDF_SZ].insert( 0 );
 }
 
 int	CvtStr2MkID( std::string sStr )
@@ -357,6 +360,25 @@ void Configuration::ParseAndSaveMkConfig( inifile::IniFile& refIniFile )
 			ServerStatus::GetStatusObj().AnchorSecurity( (enum XDFMarket)nMarketID, sShowCode.c_str(), "" );
 		}
 	}
+}
+
+bool Configuration::InWhiteTable( unsigned char cMkID, unsigned char cType )
+{
+	MAP_MK2TYPESET::iterator itMap = m_mapMkID2TypeSet.find( cMkID );
+
+	if( itMap == m_mapMkID2TypeSet.end() )
+	{
+		return false;
+	}
+
+	SET_TYPE::iterator itSet = itMap->second.find( cType );
+
+	if( itSet == itMap->second.end() )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 const std::string& Configuration::GetDataCollectorPluginPath() const

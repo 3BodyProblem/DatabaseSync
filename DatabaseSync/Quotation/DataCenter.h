@@ -64,6 +64,7 @@ typedef struct
 	char						Name[32];				///< 商品名称
 	unsigned short				ExchangeID;				///< 交易所ID
 	unsigned char				Type;					///< 类型
+	unsigned int				SyncFlag;				///< 数据库同步标识 (0:不需要同步 1:需要同步，但未同步 2:已经同步到数据库)
 	unsigned int				LotSize;				///< 手比率(最小交易数量)
 	unsigned int				ContractUnit;			///< 合约单位
 	unsigned int				ContractMulti;			///< 合约乖数

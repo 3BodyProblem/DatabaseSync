@@ -87,6 +87,13 @@ public:
 	 */
 	WorkStatus&					GetWorkStatus();
 
+public:///< 行情接口的回调函数
+	virtual bool __stdcall		XDF_OnRspStatusChanged( unsigned char cMarket, int nStatus );
+	virtual void __stdcall		XDF_OnRspRecvData( XDFAPI_PkgHead * pHead, const char * pszBuf, int nBytes );
+	virtual void __stdcall		XDF_OnRspOutLog( unsigned char nLogType, unsigned char nLogLevel,const char * pLogBuf );
+	virtual int	__stdcall		XDF_OnRspNotify( unsigned int nNotifyNo, void* wParam, void* lParam );
+
+public:///< 行情更新函数
 	/**
 	 * @brief					更新获取所有市场的日期和时间
 	 */
@@ -101,12 +108,6 @@ public:
 	 * @brief					更新行情数据到数据库
 	 */
 	void						SyncSnapshot2Database();
-
-public:///< 行情接口的回调函数
-	virtual bool __stdcall		XDF_OnRspStatusChanged( unsigned char cMarket, int nStatus );
-	virtual void __stdcall		XDF_OnRspRecvData( XDFAPI_PkgHead * pHead, const char * pszBuf, int nBytes );
-	virtual void __stdcall		XDF_OnRspOutLog( unsigned char nLogType, unsigned char nLogLevel,const char * pLogBuf );
-	virtual int	__stdcall		XDF_OnRspNotify( unsigned int nNotifyNo, void* wParam, void* lParam );
 
 protected:///< 加载市场行情数据
 	/**

@@ -304,6 +304,11 @@ int Quotation::SaveShLv1()
 						pTagParam->TradingVolume = 0;
 						pTagParam->TradingDate = ServerStatus::GetStatusObj().FetchMkDate( XDF_SH );
 						::sprintf( pTagParam->ClassID, "%d", (int)(tagParam.Type) );
+
+						if( Configuration::GetConfig().InWhiteTable( XDF_SH, pTagParam->Type ) )
+						{
+							pTagParam->SyncFlag = 1;
+						}
 					}
 
 					ServerStatus::GetStatusObj().AnchorSecurity( XDF_SH, pTagParam->Code, pTagParam->Name );
@@ -716,6 +721,11 @@ int Quotation::SaveSzLv1()
 						pTagParam->TradingVolume = 0;
 						pTagParam->TradingDate = ServerStatus::GetStatusObj().FetchMkDate( XDF_SZ );
 						::sprintf( pTagParam->ClassID, "%d", (int)(tagParam.Type) );
+
+						if( Configuration::GetConfig().InWhiteTable( XDF_SZ, pTagParam->Type ) )
+						{
+							pTagParam->SyncFlag = 1;
+						}
 					}
 
 					ServerStatus::GetStatusObj().AnchorSecurity( XDF_SZ, pTagParam->Code, pTagParam->Name );
@@ -1812,12 +1822,15 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
-					pTagParam->Volume = tagTickLine.Volume;
-					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
-					QuotationDatabase::GetDbObj().Update_Commodity( '1', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
-						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
-						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					if( 1 == pTagParam->SyncFlag )
+					{
+						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+						pTagParam->Volume = tagTickLine.Volume;
+						pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
+						QuotationDatabase::GetDbObj().Update_Commodity( '1', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					}
 				}
 			}
 
@@ -1857,12 +1870,15 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
-					pTagParam->Volume = tagTickLine.Volume;
-					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
-					QuotationDatabase::GetDbObj().Update_Commodity( '1', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
-						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
-						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					if( 1 == pTagParam->SyncFlag )
+					{
+						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+						pTagParam->Volume = tagTickLine.Volume;
+						pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
+						QuotationDatabase::GetDbObj().Update_Commodity( '1', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					}
 				}
 			}
 
@@ -1909,12 +1925,15 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
-					pTagParam->Volume = tagTickLine.Volume;
-					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
-					QuotationDatabase::GetDbObj().Update_Commodity( '2', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
-						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
-						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					if( 1 == pTagParam->SyncFlag )
+					{
+						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+						pTagParam->Volume = tagTickLine.Volume;
+						pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
+						QuotationDatabase::GetDbObj().Update_Commodity( '2', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					}
 				}
 			}
 
@@ -1954,12 +1973,15 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
-					pTagParam->Volume = tagTickLine.Volume;
-					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
-					QuotationDatabase::GetDbObj().Update_Commodity( '2', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
-						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
-						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					if( 1 == pTagParam->SyncFlag )
+					{
+						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+						pTagParam->Volume = tagTickLine.Volume;
+						pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
+						QuotationDatabase::GetDbObj().Update_Commodity( '2', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					}
 				}
 			}
 
@@ -1999,12 +2021,15 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
-					pTagParam->Volume = tagTickLine.Volume;
-					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
-					QuotationDatabase::GetDbObj().Update_Commodity( '3', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
-						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
-						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					if( 1 == pTagParam->SyncFlag )
+					{
+						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+						pTagParam->Volume = tagTickLine.Volume;
+						pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
+						QuotationDatabase::GetDbObj().Update_Commodity( '3', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					}
 				}
 			}
 
@@ -2044,12 +2069,15 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
-					pTagParam->Volume = tagTickLine.Volume;
-					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;						///< 涨跌幅度(用收盘价计算)
-					QuotationDatabase::GetDbObj().Update_Commodity( '4', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
-						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
-						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					if( 1 == pTagParam->SyncFlag )
+					{
+						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+						pTagParam->Volume = tagTickLine.Volume;
+						pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;						///< 涨跌幅度(用收盘价计算)
+						QuotationDatabase::GetDbObj().Update_Commodity( '4', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					}
 				}
 			}
 
@@ -2089,12 +2117,15 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
-					pTagParam->Volume = tagTickLine.Volume;
-					pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
-					QuotationDatabase::GetDbObj().Update_Commodity( '4', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
-						, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
-						, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					if( 1 == pTagParam->SyncFlag )
+					{
+						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
+						pTagParam->Volume = tagTickLine.Volume;
+						pTagParam->FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
+						QuotationDatabase::GetDbObj().Update_Commodity( '4', tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
+							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
+					}
 				}
 			}
 

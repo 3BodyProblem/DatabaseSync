@@ -1,6 +1,7 @@
 #ifndef __DATA_CONFIGURATION_H__
 #define __DATA_CONFIGURATION_H__
 #pragma warning(disable: 4786)
+#include <set>
 #include <map>
 #include <vector>
 #include <string>
@@ -38,20 +39,8 @@ protected:
 };
 
 
-/**
- * @class						T_CLOSE_CFG
- * @brief						收盘配置信息
- * @author						barry
- */
-typedef struct
-{
-	unsigned int				LastDate;							///< 最后落盘日期
-	unsigned int				CloseTime;							///< 收盘时间
-} CLOSE_CFG;
-
-
-typedef std::vector<CLOSE_CFG>				TB_MK_CLOSECFG;			///< 市场收盘配置表
-typedef std::map<short,TB_MK_CLOSECFG>		MAP_MK_CLOSECFG;		///< 各市场收盘配置
+typedef std::set<unsigned char>				SET_TYPE;				///< 商品类型集合
+typedef std::map<unsigned char,SET_TYPE>	MAP_MK2TYPESET;			///< 各市场对应的有效类型白名单集
 typedef std::map<std::string,std::string>	MAP_CODE4SHORT;			///< 代码到简称的映射表
 
 
@@ -143,6 +132,15 @@ public:
 	 */
 	const std::string&			GetDataCollectorPluginPath() const;
 
+	/**
+	 * @brief					判断某市场某类型是否在白名单里
+	 * @param[in]				cMkID						市场ID
+	 * @param[in]				cType						商品类型
+	 * @return					true						在白名单里
+								false						不在
+	 */
+	bool						InWhiteTable( unsigned char cMkID, unsigned char cType );
+
 protected:
 	/**
 	 * @brief					解析各市场的行情配置并转存到对应目录中
@@ -151,6 +149,7 @@ protected:
 	void						ParseAndSaveMkConfig( inifile::IniFile& refIniFile );
 
 protected:
+	MAP_MK2TYPESET				m_mapMkID2TypeSet;			///< 各市场的商品类型对应的白名单集合
 	std::vector<std::string>	m_vctMkNameCfg;				///< 市场名称列表
 	std::string					m_sQuoPluginPath;			///< 行情插件路径
 	std::string					m_sDBHost;					///< mysql地址

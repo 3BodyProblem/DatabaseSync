@@ -527,6 +527,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						refTickLine.AskPx2 = pStock->Sell[1].Price;
 						refTickLine.AskVol2 = pStock->Sell[1].Volume;
 						refTickLine.Voip = pStock->Voip / refParam.PriceRate;
+						refParam.SyncFlag = 1;
 				}
 				}
 				break;
@@ -555,6 +556,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						//refTickLine.OpenInterest = 0;
 						//refTickLine.NumTrades = pStock->Records;
 						//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
+						refParam.SyncFlag = 1;
 					}
 				}
 				break;
@@ -595,6 +597,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				::memcpy( refTickLine.TradingPhaseCode, pStock->TradingPhaseCode, sizeof(pStock->TradingPhaseCode) );
+				refParam.SyncFlag = 1;
 			}
 		}
 		break;
@@ -636,6 +639,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						refTickLine.AskVol2 = pStock->Sell[1].Volume;
 						refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 						::memcpy( refTickLine.PreName, refParam.PreName, 4 );
+						refParam.SyncFlag = 1;
 					}
 				}
 				break;
@@ -664,6 +668,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						//refTickLine.OpenInterest = 0;
 						//refTickLine.NumTrades = pStock->Records;
 						//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
+						refParam.SyncFlag = 1;
 					}
 				}
 				break;
@@ -704,6 +709,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				::memcpy( refTickLine.TradingPhaseCode, pStock->TradingPhaseCode, sizeof(pStock->TradingPhaseCode) );
+				refParam.SyncFlag = 1;
 			}
 		}
 		break;
@@ -741,6 +747,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.AskPx2 = pStock->Sell[1].Price;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
+				refParam.SyncFlag = 1;
 			}
 		}
 		break;
@@ -778,6 +785,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.AskPx2 = pStock->Sell[1].Price;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
+				refParam.SyncFlag = 1;
 			}
 		}
 		break;
@@ -822,6 +830,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.AskPx2 = pStock->Sell[1].Price;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
+				refParam.SyncFlag = 1;
 			}
 		}
 		break;
@@ -866,6 +875,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.AskPx2 = pStock->Sell[1].Price;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
+				refParam.SyncFlag = 1;
 			}
 		}
 		break;
