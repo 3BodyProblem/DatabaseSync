@@ -238,8 +238,14 @@ Configuration::Configuration()
 	m_vctMkNameCfg.push_back( "sz_setting" );
 	m_vctMkNameCfg.push_back( "szopt_setting" );
 
-	m_mapMkID2TypeSet[XDF_SH].insert( 0 );
-	m_mapMkID2TypeSet[XDF_SZ].insert( 0 );
+	m_mapMkID2TypeSet[XDF_SH].insert( 0 );		///< 指数
+	m_mapMkID2TypeSet[XDF_SH].insert( 1 );		///< A股
+	m_mapMkID2TypeSet[XDF_SH].insert( 7 );		///< ETF
+	m_mapMkID2TypeSet[XDF_SZ].insert( 0 );		///< 指数
+	m_mapMkID2TypeSet[XDF_SZ].insert( 1 );		///< A股
+	m_mapMkID2TypeSet[XDF_SZ].insert( 7 );		///< ETF
+	m_mapMkID2TypeSet[XDF_SZ].insert( 8 );		///< 中小板
+	m_mapMkID2TypeSet[XDF_SZ].insert( 9 );		///< 创业板
 }
 
 int	CvtStr2MkID( std::string sStr )
