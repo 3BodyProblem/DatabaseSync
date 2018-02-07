@@ -8,9 +8,9 @@
 #pragma  warning(disable:4996)
 
 
-#define PINYINNAME _T("PinYin")
-#define PINYINEXT _T("py")
-#define MOHUYINNAME _T("MoHuYin")
+#define PINYINNAME L"PinYin"
+#define PINYINEXT L"py"
+#define MOHUYINNAME L"MoHuYin"
 
 #define QL_MAX_PATH 512
 char  CQLMatchCH::m_Data[MAX_DATA_SIZE];
@@ -33,7 +33,23 @@ CQLMatchCH::~CQLMatchCH()
 {
 }
 
-bool CQLMatchCH::MatchPinYin2(const TCHAR name, const TCHAR key)
+char CQLMatchCH::GetSimpPinYin(const wchar_t name)
+{
+	if(!InitStaticData())
+	{
+		return false;
+	}
+
+	char ret = 0;
+
+	int pos = (int)name - (int)m_stHead.usStart;
+
+	ret = m_Data[pos * m_stHead.filednum];
+
+	return ret;
+}
+
+bool CQLMatchCH::MatchPinYin2(const wchar_t name, const wchar_t key)
 {
 	if(!InitStaticData())
 	{
@@ -65,7 +81,7 @@ bool CQLMatchCH::MatchPinYin2(const TCHAR name, const TCHAR key)
 	return ret;
 }
 
-bool CQLMatchCH::MatchPinYin(const TCHAR name, const TCHAR key)
+bool CQLMatchCH::MatchPinYin(const wchar_t name, const wchar_t key)
 {
 	if(!InitStaticData())
 	{
@@ -90,7 +106,7 @@ bool CQLMatchCH::MatchPinYin(const TCHAR name, const TCHAR key)
 	return ret;
 }
 
-bool CQLMatchCH::MatchPinYin(const TCHAR *name, const TCHAR *key)
+bool CQLMatchCH::MatchPinYin(const wchar_t *name, const wchar_t *key)
 {
 	if(!InitStaticData())
 	{
@@ -102,17 +118,17 @@ bool CQLMatchCH::MatchPinYin(const TCHAR *name, const TCHAR *key)
 	if (!name || !key)
 		return false;
 
-	TCHAR szName[64] = {0};
+	wchar_t szName[64] = {0};
 	memset(szName, 0, sizeof(szName));
-	_tcscpy(szName, name);
+	wcscpy(szName, name);
 
-	int nNameLen = _tcslen(name);
-	int nKeyLen = _tcslen(key);
+	int nNameLen = wcslen(name);
+	int nKeyLen = wcslen(key);
 
 	int i = 0, j = 0;
 	for (i = 0; i < nNameLen; i++)
 	{
-		if (szName[i] == _T(' '))
+		if (szName[i] == L' ')
 		{
 			j = i;
 			for (j = i; j < nNameLen; j++)
@@ -124,7 +140,7 @@ bool CQLMatchCH::MatchPinYin(const TCHAR *name, const TCHAR *key)
 		}
 	}
 
-	nNameLen = _tcslen(szName);
+	nNameLen = wcslen(szName);
 
 	if (nNameLen < nKeyLen)
 	{
@@ -191,25 +207,25 @@ int CQLMatchCH::wcsCmpPY(const wchar_t* x, const wchar_t* y)
 
 bool CQLMatchCH::ReadPYIdxFile()
 {
-	TCHAR dllpath[MAX_PATH], drv[_MAX_DRIVE], dir[_MAX_DIR], fn[_MAX_FNAME], ext[_MAX_EXT];
-	TCHAR sortpath[MAX_PATH];
+	wchar_t dllpath[MAX_PATH], drv[_MAX_DRIVE], dir[_MAX_DIR], fn[_MAX_FNAME], ext[_MAX_EXT];
+	wchar_t sortpath[MAX_PATH];
 
-	GetModuleFileName(g_oModule, dllpath, MAX_PATH);
+	GetModuleFileNameW(g_oModule, dllpath, MAX_PATH);
 
-	_tsplitpath(dllpath, drv, dir, fn, ext);
+	_wsplitpath(dllpath, drv, dir, fn, ext);
 
-	_tmakepath(sortpath, drv, dir, _T("pyidx"), _T("ini"));
+	_wmakepath(sortpath, drv, dir, L"pyidx", L"ini");
 
 
 	m_PYIdxList.clear();
 
-	TCHAR tcReturnString[256] = {0};
+	wchar_t tcReturnString[256] = {0};
 	long size;
-	size = GetPrivateProfileSection(_T("pyidx"),tcReturnString,256,sortpath);
+	size = GetPrivateProfileSectionW(L"pyidx",tcReturnString,256,sortpath);
 	int nPos = 0;
 	while (nPos < size)
 	{
-		if (tcReturnString[nPos] == _T('='))
+		if (tcReturnString[nPos] == L'=')
 		{
 			strPYIdx buf;
 			memset(&buf,0,sizeof(strPYIdx));
@@ -243,16 +259,16 @@ bool CQLMatchCH::ReadPYIdxFile()
 
 bool CQLMatchCH::ReadSortFile()
 {
-	TCHAR dllpath[MAX_PATH], drv[_MAX_DRIVE], dir[_MAX_DIR], fn[_MAX_FNAME], ext[_MAX_EXT];
-	TCHAR sortpath[MAX_PATH];
+	wchar_t dllpath[MAX_PATH], drv[_MAX_DRIVE], dir[_MAX_DIR], fn[_MAX_FNAME], ext[_MAX_EXT];
+	wchar_t sortpath[MAX_PATH];
 
-	GetModuleFileName(g_oModule, dllpath, MAX_PATH);
+	GetModuleFileNameW(g_oModule, dllpath, MAX_PATH);
 
-	_tsplitpath(dllpath, drv, dir, fn, ext);
+	_wsplitpath(dllpath, drv, dir, fn, ext);
 
-	_tmakepath(sortpath, drv, dir, _T("hanzi"), _T("sort"));
+	_wmakepath(sortpath, drv, dir, L"hanzi", L"sort");
 
-	FILE* pf = _tfopen(sortpath, _T("rb"));
+	FILE* pf = _wfopen(sortpath, L"rb");
 
 	if(NULL != pf)
 	{
@@ -273,15 +289,15 @@ BOOL CQLMatchCH::InitStaticData()
 	while(!m_bInit)
 	{
 		m_bInit = true;
-		TCHAR respath[QL_MAX_PATH], respath2[QL_MAX_PATH], dllpath[QL_MAX_PATH], drv[_MAX_DRIVE], dir[QL_MAX_PATH], fn[_MAX_FNAME], ext[_MAX_EXT];
-		::GetModuleFileName(g_oModule, dllpath, QL_MAX_PATH-1);
-		_tsplitpath(dllpath, drv, dir, fn, ext);
+		wchar_t respath[QL_MAX_PATH], respath2[QL_MAX_PATH], dllpath[QL_MAX_PATH], drv[_MAX_DRIVE], dir[QL_MAX_PATH], fn[_MAX_FNAME], ext[_MAX_EXT];
+		::GetModuleFileNameW(g_oModule, dllpath, QL_MAX_PATH-1);
+		_wsplitpath(dllpath, drv, dir, fn, ext);
 
 		//¶ÁÈ¡Æ´ÒôÓ³Éä±í
-		_tmakepath(respath, drv, dir, PINYINNAME, PINYINEXT);
+		_wmakepath(respath, drv, dir, PINYINNAME, PINYINEXT);
 		memset(&m_stHead, 0, sizeof(stHead));
 
-		HANDLE hfPY = CreateFile(respath,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
+		HANDLE hfPY = CreateFileW(respath,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
 
 		if (hfPY != INVALID_HANDLE_VALUE)
 		{
@@ -309,8 +325,8 @@ BOOL CQLMatchCH::InitStaticData()
 		}
 
 		//¶ÁÈ¡¶àÒô×Ö±í
-		_tmakepath(respath, drv, dir, PINYINNAME, _T("dyz"));
-		HANDLE hfDYZ = CreateFile(respath,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
+		_wmakepath(respath, drv, dir, PINYINNAME, L"dyz");
+		HANDLE hfDYZ = CreateFileW(respath,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
 
 		if (hfDYZ != INVALID_HANDLE_VALUE)
 		{
@@ -390,13 +406,13 @@ BOOL CQLMatchCH::InitStaticData()
 		}
 
 		//¶ÁÈ¡Ä£ºýÒôÓ³Éä±í
-		_tmakepath(respath2, drv, dir, MOHUYINNAME, _T("ini"));
-		TCHAR szMHY[256] = {0};
-		INT size = GetPrivateProfileSection(_T("MOHUYIN"), szMHY, MAX_PATH, respath2);
+		_wmakepath(respath2, drv, dir, MOHUYINNAME, L"ini");
+		wchar_t szMHY[256] = {0};
+		int size = GetPrivateProfileSectionW(L"MOHUYIN", szMHY, MAX_PATH, respath2);
 		int nPos = 0;
 		while (nPos < size)
 		{
-			if (szMHY[nPos] == _T('='))
+			if (szMHY[nPos] == L'=')
 			{
 				stMohuYin buf;
 				buf.src = _totupper(szMHY[nPos-1]);
@@ -465,7 +481,7 @@ BOOL CQLMatchCH::InitStaticData()
 }
 
 
-bool CQLMatchCH::GetFirstPinYin(const TCHAR name, TCHAR *outkey)
+bool CQLMatchCH::GetFirstPinYin(const wchar_t name, wchar_t *outkey)
 {
 	if(!InitStaticData())
 	{
@@ -504,7 +520,7 @@ bool CQLMatchCH::GetFirstPinYin(const TCHAR name, TCHAR *outkey)
 	return false;
 }
 
-bool CQLMatchCH::GetPosPinYin(const TCHAR name, long *Pos)
+bool CQLMatchCH::GetPosPinYin(const wchar_t name, long *Pos)
 {
 	if(!InitStaticData())
 	{

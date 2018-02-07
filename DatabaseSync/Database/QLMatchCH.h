@@ -22,20 +22,22 @@ public:
 	virtual ~CQLMatchCH();
 
 public:
-	static bool MatchPinYin(const TCHAR *name, const TCHAR *key);
-	static bool MatchPinYin(const TCHAR name, const TCHAR key);
+	static bool MatchPinYin(const wchar_t *name, const wchar_t *key);
+	static bool MatchPinYin(const wchar_t name, const wchar_t key);
 	static bool ModifyPinYin(char * PyList);
+
+	static char GetSimpPinYin(const wchar_t name);
 
 	static BOOL InitStaticData();
 	static int wcsCmpPY(const wchar_t* x, const wchar_t* y);
 
-	static bool GetFirstPinYin(const TCHAR name, TCHAR *outkey);
-	static bool GetPosPinYin(const TCHAR name, long *Pos);
+	static bool GetFirstPinYin(const wchar_t name, wchar_t *outkey);
+	static bool GetPosPinYin(const wchar_t name, long *Pos);
 
 
 protected:
 //	bool ChtoPy(const TCHAR Ch);
-	static bool MatchPinYin2(const TCHAR name, const TCHAR key);
+	static bool MatchPinYin2(const wchar_t name, const wchar_t key);
 	static bool ReadSortFile();
 	static bool ReadPYIdxFile();
 
@@ -60,14 +62,14 @@ protected:
 
 	struct stMohuYin
 	{
-		TCHAR	src;
-		TCHAR	dst;
+		wchar_t	src;
+		wchar_t	dst;
 	};
 
 	struct strPYIdx
 	{
-		TCHAR	src;
-		TCHAR	dst;
+		wchar_t	src;
+		wchar_t	dst;
 		long pos;
 	};
 

@@ -149,9 +149,9 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 	::sprintf( pszTradingDate, "%d-%d-%d", nTradingDate/10000, nTradingDate%10000/100, nTradingDate%100 );
 
 	if( 0 >= ::sprintf( pszSqlCmd
-					, "REPLACE INTO commodity (typeId,exchange,code,name,lotSize,contractMulti,priceTick,preClose,preSettle,upperPrice,lowerPrice,price,openPrice,settlementPrice,closePrice,bid1,ask1,highPrice,lowPrice,uplowPercent,volume,nowVolumn,amount,isTrading,tradingDate,upLimit,classId,addTime,updatetime) VALUES (%d,%d,\'%s\',\'%s\',%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%I64d,%I64d,%f,%d,\'%s\',0,\'%s\',now(),now());"
+					, "REPLACE INTO commodity (typeId,exchange,code,name,lotSize,contractMulti,priceTick,preClose,preSettle,upperPrice,lowerPrice,price,openPrice,settlementPrice,closePrice,bid1,ask1,highPrice,lowPrice,uplowPercent,volume,nowVolumn,amount,isTrading,tradingDate,upLimit,classId,addTime,updatetime,hzpy) VALUES (%d,%d,\'%s\',\'%s\',%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%I64d,%I64d,%f,%d,\'%s\',0,\'%s\',now(),now(),\'%s\');"
 					, nTypeID, nExchangeID, pszCode, pszName, nLotSize, nContractMulti, dPriceTick, dPreClose, dPreSettle, dUpperPrice, dLowerPrice, dPrice, dOpenPrice, dSettlePrice, dClosePrice, dBid1Price, dAsk1Price, dHighPrice, dLowPrice, dFluctuationPercent, nVolume, nTradingVolume, dAmount, nIsTrading
-					, pszTradingDate, pszClassID ) )
+					, pszTradingDate, pszClassID, ShortSpell::GetObj().GetShortSpell( pszCode, pszName ).c_str() ) )
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Replace_Commodity() : ::sprintf() invalid return value." );
 		return -1024*2;

@@ -203,25 +203,63 @@ int ShortSpell::LoadFromCSV()
 	return 0;
 }
 
+int ShortSpell::SaveToCSV()
+{
+	std::ofstream			objCSV;
+
+	///< 目标文件已经存在，函数直接返回
+	if( true == File::IsExist( "shortspell.csv" ) )
+	{
+		return 1;
+	}
+
+	objCSV.open( "shortspell.csv", std::ios::out | std::ios::binary );
+	if( !objCSV.is_open() )
+	{
+		return -1;
+	}
+
+	for( MAP_CODE4SHORT::iterator it = m_mapCode2ShortSpell.begin(); it != m_mapCode2ShortSpell.end(); it++ )
+	{
+		char	pszLine[128] = { 0 };
+
+		::sprintf( pszLine, "%s,%s\n", it->first.c_str(), it->second.c_str() );
+		objCSV << pszLine;
+	}
+
+	objCSV.close();
+
+	return 0;
+}
+
 std::string ShortSpell::GetShortSpell( std::string sCode, std::string sName )
 {
 	char						pszSpell[218] = { 0 };
 	MAP_CODE4SHORT::iterator	it = m_mapCode2ShortSpell.find( sCode );
 
+	///< 根据code找到对应的“简拼”
 	if( it != m_mapCode2ShortSpell.end() )
 	{
 		return it->second;
 	}
 
-/*	if( false == CQLMatchCH::GetFirstPinYin( (const TCHAR*)sName.c_str(), (TCHAR*)pszSpell ) )
+	///< 未找到对应“简拼”的情况
+	wchar_t						pszDesc[128] = { 0 };
+	int							nLen = ::MultiByteToWideChar( 936, 0, sName.c_str(), -1, pszDesc, _countof(pszDesc) );
+
+	for( int n = 0; n < (nLen - 1); n++ )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "ShortSpell::GetShortSpell() : failed 2 convert name 2 spell" );
-		return "";
+		pszSpell[n] = CQLMatchCH::GetSimpPinYin( pszDesc[n] );
+		if( pszSpell[n] == 0 )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "ShortSpell::GetShortSpell() : failed 2 convert name 2 spell (%s)", sName.c_str() );
+			return "";
+		}
 	}
-	else*/
-	{
-		return pszSpell;
-	}
+
+	m_mapCode2ShortSpell[sCode] = pszSpell;		///< 对code设置“简拼”
+
+	return pszSpell;
 }
 
 

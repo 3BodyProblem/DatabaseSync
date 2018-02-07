@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 #include "Infrastructure/Lock.h"
+#include "Infrastructure/File.h"
 #include "Infrastructure/IniFile.h"
 
 
@@ -63,6 +64,13 @@ public:
 								!=0							加载，失败
 	 */
 	int							LoadFromCSV();
+
+	/**
+	 * @brief					保存到本地文件
+	 * @return					==0							保存，成功
+								!=0							保存，失败
+	 */
+	int							SaveToCSV();
 
 	/**
 	 * @brief					根据商品代码返回简拼
