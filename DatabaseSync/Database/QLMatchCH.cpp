@@ -37,12 +37,17 @@ char CQLMatchCH::GetSimpPinYin(const wchar_t name)
 {
 	if(!InitStaticData())
 	{
-		return false;
+		return '?';
 	}
 
 	char ret = 0;
 
 	int pos = (int)name - (int)m_stHead.usStart;
+
+	if(pos < 0 || pos >= m_stHead.usEnd)
+	{
+		return '?';
+	}
 
 	ret = m_Data[pos * m_stHead.filednum];
 

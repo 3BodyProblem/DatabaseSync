@@ -145,13 +145,46 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 {
 	char		pszSqlCmd[1024*2] = { 0 };
 	char		pszTradingDate[64] = { 0 };
+	char		pszDumpCode[32] = { 0 };
+	char		cMkID = nExchangeID;
+	///< '0'：未知 '1'：SSE（上海证劵交易所） '2'：SZSE（深圳证劵交易所） '3'：cffEX（中国金融期货交易） '4'：dcE （大连商品期货交易所） '5'：ZcE（郑州商品期货交易所） '6'：SHfE （上海期货交易所）
+	switch( cMkID )
+	{
+	case '1':
+		::strcpy( pszDumpCode, "SH." );
+		::strcpy( pszDumpCode + 3, pszCode );
+		break;
+	case '2':
+		::strcpy( pszDumpCode, "SZ." );
+		::strcpy( pszDumpCode + 3, pszCode );
+		break;
+	case '3':
+		::strcpy( pszDumpCode, "CFF." );
+		::strcpy( pszDumpCode + 4, pszCode );
+		break;
+	case '4':
+		::strcpy( pszDumpCode, "DCE." );
+		::strcpy( pszDumpCode + 4, pszCode );
+		break;
+	case '5':
+		::strcpy( pszDumpCode, "ZCE." );
+		::strcpy( pszDumpCode + 4, pszCode );
+		break;
+	case '6':
+		::strcpy( pszDumpCode, "SHFE." );
+		::strcpy( pszDumpCode + 5, pszCode );
+		break;
+	default:
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Replace_Commodity() : invalid exchange id = %c", cMkID );
+		return -1024;
+	}
 
 	::sprintf( pszTradingDate, "%d-%d-%d", nTradingDate/10000, nTradingDate%10000/100, nTradingDate%100 );
 
 	if( 0 >= ::sprintf( pszSqlCmd
 					, "REPLACE INTO commodity (typeId,exchange,code,name,lotSize,contractMulti,priceTick,preClose,preSettle,upperPrice,lowerPrice,price,openPrice,settlementPrice,closePrice,bid1,ask1,highPrice,lowPrice,uplowPercent,volume,nowVolumn,amount,isTrading,tradingDate,upLimit,classId,addTime,updatetime,hzpy) VALUES (%d,%d,\'%s\',\'%s\',%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%I64d,%I64d,%f,%d,\'%s\',0,\'%s\',now(),now(),\'%s\');"
 					, nTypeID, nExchangeID, pszCode, pszName, nLotSize, nContractMulti, dPriceTick, dPreClose, dPreSettle, dUpperPrice, dLowerPrice, dPrice, dOpenPrice, dSettlePrice, dClosePrice, dBid1Price, dAsk1Price, dHighPrice, dLowPrice, dFluctuationPercent, nVolume, nTradingVolume, dAmount, nIsTrading
-					, pszTradingDate, pszClassID, ShortSpell::GetObj().GetShortSpell( pszCode, pszName ).c_str() ) )
+					, pszTradingDate, pszClassID, ShortSpell::GetObj().GetShortSpell( pszDumpCode, pszName ).c_str() ) )
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Replace_Commodity() : ::sprintf() invalid return value." );
 		return -1024*2;

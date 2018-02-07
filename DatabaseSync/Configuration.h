@@ -42,7 +42,7 @@ protected:
 
 typedef std::set<unsigned char>				SET_TYPE;				///< 商品类型集合
 typedef std::map<unsigned char,SET_TYPE>	MAP_MK2TYPESET;			///< 各市场对应的有效类型白名单集
-typedef std::map<std::string,std::string>	MAP_CODE4SHORT;			///< 代码到简称的映射表
+typedef std::map<std::string,std::pair<std::string,std::string>>	MAP_CODE4SHORT;			///< 代码到简称的映射表
 
 
 /**
@@ -81,7 +81,9 @@ public:
 	std::string					GetShortSpell( std::string sCode, std::string sName );
 
 protected:
+	CriticalObject				m_oLock;					///< 临界区对象
 	MAP_CODE4SHORT				m_mapCode2ShortSpell;		///< 商品代码到简称的映射(SH.600000,PFYH)
+	unsigned int				m_nLastCount;				///< 最后一次统计总数
 };
 
 

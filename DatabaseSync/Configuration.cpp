@@ -151,6 +151,7 @@ bool MkCfgWriter::ConfigurateConnection4Mk( unsigned int nIndication, std::strin
 
 
 ShortSpell::ShortSpell()
+ : m_nLastCount( 0 )
 {
 	m_mapCode2ShortSpell.clear();
 }
@@ -165,7 +166,7 @@ ShortSpell& ShortSpell::GetObj()
 int ShortSpell::LoadFromCSV()
 {
 	std::ifstream			objCSV;
-	unsigned int			nCodeCount = 0;
+	CriticalLock			section( m_oLock );
 
 	objCSV.open( "shortspell.csv" );
 	if( !objCSV.is_open() )
@@ -182,23 +183,36 @@ int ShortSpell::LoadFromCSV()
 			break;
 		}
 
+		std::string		sVal1, sVal2, sVal3;
+		unsigned int	nCommaCount = 0;
+		unsigned int	nHeadPos = 0;
 		int				nLen = ::strlen( pszLine );
 
 		for( int n = 0; n < nLen; n++ )
 		{
 			if( ',' == pszLine[n] )
 			{
-				std::string		sKey( pszLine, n );
-				std::string		sValue( pszLine + n + 1, nLen - n );
+				if( 0 == nCommaCount )
+				{
+					sVal1.assign( pszLine + nHeadPos, n - nHeadPos );
+					nHeadPos =  n + 1;
+				}
+				else if( 1 == nCommaCount )
+				{
+					sVal2.assign( pszLine + nHeadPos, n - nHeadPos );
+					nHeadPos =  n + 1;
 
-				m_mapCode2ShortSpell[sKey] = sValue;
+					sVal3.assign( pszLine + nHeadPos, nLen - nHeadPos );
+					m_mapCode2ShortSpell[sVal1] = std::make_pair( sVal2, sVal3 );
+				}
+
+				nCommaCount++;
 			}
 		}
-
-		nCodeCount++;
 	}
 
-	QuoCollector::GetCollector()->OnLog( TLV_INFO, "ShortSpell::LoadFromCSV() : load code number = %u", nCodeCount );
+	m_nLastCount = m_mapCode2ShortSpell.size();
+	QuoCollector::GetCollector()->OnLog( TLV_INFO, "ShortSpell::LoadFromCSV() : load code number = %u", m_nLastCount );
 
 	return 0;
 }
@@ -206,9 +220,11 @@ int ShortSpell::LoadFromCSV()
 int ShortSpell::SaveToCSV()
 {
 	std::ofstream			objCSV;
+	CriticalLock			section( m_oLock );
+	unsigned int			nNewCount = m_mapCode2ShortSpell.size();
 
 	///< 目标文件已经存在，函数直接返回
-	if( true == File::IsExist( "shortspell.csv" ) )
+	if( nNewCount <= m_nLastCount )
 	{
 		return 1;
 	}
@@ -216,6 +232,7 @@ int ShortSpell::SaveToCSV()
 	objCSV.open( "shortspell.csv", std::ios::out | std::ios::binary );
 	if( !objCSV.is_open() )
 	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "ShortSpell::SaveToCSV() : failed 2 save file" );
 		return -1;
 	}
 
@@ -223,11 +240,12 @@ int ShortSpell::SaveToCSV()
 	{
 		char	pszLine[128] = { 0 };
 
-		::sprintf( pszLine, "%s,%s\n", it->first.c_str(), it->second.c_str() );
+		::sprintf( pszLine, "%s,%s,%s\n", it->first.c_str(), it->second.first.c_str(), it->second.second.c_str() );
 		objCSV << pszLine;
 	}
 
 	objCSV.close();
+	m_nLastCount = nNewCount;
 
 	return 0;
 }
@@ -235,29 +253,52 @@ int ShortSpell::SaveToCSV()
 std::string ShortSpell::GetShortSpell( std::string sCode, std::string sName )
 {
 	char						pszSpell[218] = { 0 };
+	CriticalLock				section( m_oLock );
 	MAP_CODE4SHORT::iterator	it = m_mapCode2ShortSpell.find( sCode );
 
 	///< 根据code找到对应的“简拼”
 	if( it != m_mapCode2ShortSpell.end() )
 	{
-		return it->second;
+		return it->second.second;
 	}
 
 	///< 未找到对应“简拼”的情况
+	unsigned int				i = 0;
 	wchar_t						pszDesc[128] = { 0 };
 	int							nLen = ::MultiByteToWideChar( 936, 0, sName.c_str(), -1, pszDesc, _countof(pszDesc) );
 
 	for( int n = 0; n < (nLen - 1); n++ )
 	{
-		pszSpell[n] = CQLMatchCH::GetSimpPinYin( pszDesc[n] );
-		if( pszSpell[n] == 0 )
+		if( pszDesc[n] >= '0' && pszDesc[n] <= '9' )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "ShortSpell::GetShortSpell() : failed 2 convert name 2 spell (%s)", sName.c_str() );
-			return "";
+			pszSpell[i++] = pszDesc[n];									///< 特殊处理数字
+		}
+		else if( (pszDesc[n] >= 'a' && pszDesc[n] <= 'z') || (pszDesc[n] >= 'A' && pszDesc[n] <= 'Z') )
+		{
+			pszSpell[i++] = ::toupper( pszDesc[n] );					///< 特殊处理数字
+		}
+		else if( pszDesc[n] == '+' || pszDesc[n] == '-' )
+		{
+			pszSpell[i++] = 'J';										///< 特殊处理符号
+		}
+		else if( pszDesc[n] == ' ' || pszDesc[n] == ' ' || pszDesc[n] == '-' || pszDesc[n] == '&' || pszDesc[n] == '?' || pszDesc[n] == '(' || pszDesc[n] == ')' || pszDesc[n] == '（' || pszDesc[n] == '）' || pszDesc[n] == '*' || pszDesc[n] == '.' )
+		{
+			continue;													///< 特殊处理空格/横杠
+		}
+		else
+		{
+			pszSpell[i] = CQLMatchCH::GetSimpPinYin( pszDesc[n] );
+
+			if( pszSpell[i++] == 0 )
+			{
+				QuoCollector::GetCollector()->OnLog( TLV_ERROR, "ShortSpell::GetShortSpell() : failed 2 convert name 2 spell (%s)", sName.c_str() );
+				return "";
+			}
 		}
 	}
 
-	m_mapCode2ShortSpell[sCode] = pszSpell;		///< 对code设置“简拼”
+	///<::printf( "%s, %s, %s\n", sCode.c_str(), sName.c_str(), pszSpell );
+	m_mapCode2ShortSpell[sCode] = std::make_pair(sName, pszSpell);		///< 对code设置“简拼”
 
 	return pszSpell;
 }
@@ -375,6 +416,8 @@ int Configuration::Initialize()
 
 	///< 转存各市场的配置到对应的文件 && 解析出需要被监控的各市场的代码
 	ParseAndSaveMkConfig( oIniFile );
+	///< 加载CSV文件
+	ShortSpell::GetObj().LoadFromCSV();
 
 	return 0;
 }

@@ -1774,6 +1774,7 @@ void Quotation::SyncNametable2Database()
 			if( 0 == nErrorCode )
 			{
 				m_vctMkSvrStatus[nMkID] = ET_SS_WORKING;	///< 设置“可服务”状态标识
+				ShortSpell::GetObj().SaveToCSV();
 			}
 		}
 	}
