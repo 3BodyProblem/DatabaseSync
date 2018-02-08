@@ -274,44 +274,6 @@ void* QuotationData::ThreadSyncSnapshot( void* pSelf )
 			SimpleThread::Sleep( 1000 );
 			refQuotation.SyncMarketsTime();						///< 更新各市场的日期和时间
 			refQuotation.SyncSnapshot2Database();				///< 更新各市场行情数据到数据库
-
-/*
-			char*					pBufPtr = CacheAlloc::GetObj().GetBufferPtr();
-			unsigned int			nMaxDataNum = refData.m_arrayTickLine.GetRecordCount();
-			std::string				sCode;
-			std::ofstream			oDumper;
-			STR_TICK_LINE			pszLine = { 0 };
-
-			SimpleThread::Sleep( 1000 * 1 );
-			if( NULL == pBufPtr || 0 == nMaxDataNum ) {
-				continue;
-			}
-
-			while( true )
-			{
-				T_TICK_LINE		tagTickData = { 0 };
-
-				if( refData.m_arrayTickLine.GetData( &tagTickData ) <= 0 )
-				{
-					break;
-				}
-
-				if( sCode != tagTickData.Code )
-				{
-					if( false == PrepareTickFile( &tagTickData, sCode, oDumper ) )
-					{
-						continue;
-					}
-				}
-
-				if( !oDumper.is_open() )
-				{
-					QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ThreadDumpTickLine() : invalid file handle" );
-					SimpleThread::Sleep( 1000 * 10 );
-					continue;
-				}
-			}
-*/
 		}
 		catch( std::exception& err )
 		{

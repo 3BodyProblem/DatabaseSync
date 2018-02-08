@@ -60,6 +60,13 @@ public:
 	int							Commit();
 
 	/**
+	 * @brief					回退事务
+	 * @return					==0						成功
+								!=0						失败
+	 */
+	int							RollBack();
+
+	/**
 	 * @brief					新增一条商品记录
 	 * @param[in]				nType					商品类型
 	 * @param[in]				nExchangeID				市场代码, '0'：未知 '1'：SSE（上海证劵交易所） '2'：SZSE（深圳证劵交易所） '3'：cffEX（中国金融期货交易） '4'：dcE （大连商品期货交易所） '5'：ZcE（郑州商品期货交易所） '6'：SHfE （上海期货交易所）
@@ -135,6 +142,7 @@ protected:
 protected:
 	MYSQL						m_oMySqlHandle;			///< mysql访问句柄
 	MYSQL*						m_pMysqlConnection;		///< connection handle
+	unsigned int				m_nTransRefCount;		///< 事务开启的引用计数
 };
 
 

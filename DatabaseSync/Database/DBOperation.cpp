@@ -5,7 +5,7 @@
 
 
 QuotationDatabase::QuotationDatabase()
- : m_pMysqlConnection( NULL )
+ : m_pMysqlConnection( NULL ), m_nTransRefCount( 0 )
 {
 }
 
@@ -105,12 +105,20 @@ int QuotationDatabase::StartTransaction()
 {
 	if( NULL != m_pMysqlConnection )
 	{
+		if( m_nTransRefCount > 0 )
+		{
+			return 1;
+		}
+
 		int	nRet = ::mysql_query( &m_oMySqlHandle, "BEGIN TRANSACTION;" );
 
 		if( nRet < 0 )
 		{
 			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::StartTransaction() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
+			return -1;
 		}
+
+		m_nTransRefCount++;
 
 		return nRet;
 	}
@@ -122,12 +130,36 @@ int QuotationDatabase::Commit()
 {
 	if( NULL != m_pMysqlConnection )
 	{
-		int	nRet = ::mysql_commit( &m_oMySqlHandle );
-		//int	nRet = ::mysql_query( &m_oMySqlHandle, "COMMIT;" );
+		if( 0 == m_nTransRefCount )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Commit() : [ERROR] transaction is not available. refcount = %d", m_nTransRefCount );
+			return -1;
+		}
 
+		int	nRet = ::mysql_commit( &m_oMySqlHandle );
+
+		m_nTransRefCount = 0;
 		if( nRet < 0 )
 		{
 			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Commit() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
+			return -2;
+		}
+
+		return nRet;
+	}
+
+	return -1024;
+}
+
+int QuotationDatabase::RollBack()
+{
+	if( NULL != m_pMysqlConnection )
+	{
+		int	nRet = ::mysql_rollback( &m_oMySqlHandle );
+
+		if( nRet < 0 )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::RollBack() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
 		}
 
 		return nRet;
@@ -146,36 +178,36 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 	char		pszSqlCmd[1024*2] = { 0 };
 	char		pszTradingDate[64] = { 0 };
 	char		pszDumpCode[32] = { 0 };
-	char		cMkID = nExchangeID;
+
 	///< '0'：未知 '1'：SSE（上海证劵交易所） '2'：SZSE（深圳证劵交易所） '3'：cffEX（中国金融期货交易） '4'：dcE （大连商品期货交易所） '5'：ZcE（郑州商品期货交易所） '6'：SHfE （上海期货交易所）
-	switch( cMkID )
+	switch( nExchangeID )
 	{
-	case '1':
+	case 1:
 		::strcpy( pszDumpCode, "SH." );
 		::strcpy( pszDumpCode + 3, pszCode );
 		break;
-	case '2':
+	case 2:
 		::strcpy( pszDumpCode, "SZ." );
 		::strcpy( pszDumpCode + 3, pszCode );
 		break;
-	case '3':
+	case 3:
 		::strcpy( pszDumpCode, "CFF." );
 		::strcpy( pszDumpCode + 4, pszCode );
 		break;
-	case '4':
+	case 4:
 		::strcpy( pszDumpCode, "DCE." );
 		::strcpy( pszDumpCode + 4, pszCode );
 		break;
-	case '5':
+	case 5:
 		::strcpy( pszDumpCode, "ZCE." );
 		::strcpy( pszDumpCode + 4, pszCode );
 		break;
-	case '6':
+	case 6:
 		::strcpy( pszDumpCode, "SHFE." );
 		::strcpy( pszDumpCode + 5, pszCode );
 		break;
 	default:
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Replace_Commodity() : invalid exchange id = %c", cMkID );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Replace_Commodity() : invalid exchange id = %d", nExchangeID );
 		return -1024;
 	}
 
