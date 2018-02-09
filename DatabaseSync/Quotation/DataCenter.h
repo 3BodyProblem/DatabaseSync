@@ -207,10 +207,11 @@ public:
 	 * @param[in]				eMarket			市场ID
 	 * @param[in]				sCode			商品代码
 	 * @param[in]				refParam		行情参数
+	 * @param[in]				bQueryOnly		只查询
 	 * @return					==NULL			建立失败
 								!=NULL			建立成功，返回对应的结构指针
 	 */
-	T_LINE_PARAM*				BuildSecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam );
+	T_LINE_PARAM*				BuildSecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam, bool bQueryOnly = false );
 
 	/**
 	 * @brief					更新前缀

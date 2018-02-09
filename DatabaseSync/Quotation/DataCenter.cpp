@@ -208,7 +208,7 @@ int QuotationData::Initialize( void* pQuotation )
 
 	if( false == m_oThdNametableSync.IsAlive() )
 	{
-		if( 0 != m_oThdSnapSync.Create( "ThreadSyncNametable()", ThreadSyncNametable, this ) ) {
+		if( 0 != m_oThdNametableSync.Create( "ThreadSyncNametable()", ThreadSyncNametable, this ) ) {
 			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 create nametable thread" );
 			return -2;
 		}
@@ -331,7 +331,7 @@ int QuotationData::UpdatePreName( enum XDFMarket eMarket, std::string& sCode, ch
 	return 0;
 }
 
-T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam )
+T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam, bool bQueryOnly )
 {
 	T_MAP_QUO::iterator it = NULL;
 	unsigned int		nBufSize = 0;
@@ -345,6 +345,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapSHL1.find( sCode );
 			if( it == m_mapSHL1.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapSHL1[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapSHL1[sCode];
 				return &refData;
@@ -356,6 +361,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapSHOPT.find( sCode );
 			if( it == m_mapSHOPT.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapSHOPT[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapSHOPT[sCode];
 				return &refData;
@@ -367,6 +377,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapSZL1.find( sCode );
 			if( it == m_mapSZL1.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapSZL1[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapSZL1[sCode];
 				return &refData;
@@ -378,6 +393,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapSZOPT.find( sCode );
 			if( it == m_mapSZOPT.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapSZOPT[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapSZOPT[sCode];
 				return &refData;
@@ -389,6 +409,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapCFF.find( sCode );
 			if( it == m_mapCFF.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapCFF[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapCFF[sCode];
 				return &refData;
@@ -400,6 +425,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapCFFOPT.find( sCode );
 			if( it == m_mapCFFOPT.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapCFFOPT[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapCFFOPT[sCode];
 				return &refData;
@@ -411,6 +441,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapCNF.find( sCode );
 			if( it == m_mapCNF.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapCNF[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapCNF[sCode];
 				return &refData;
@@ -422,6 +457,11 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 			it = m_mapCNFOPT.find( sCode );
 			if( it == m_mapCNFOPT.end() )
 			{
+				if( true == bQueryOnly )
+				{
+					return NULL;
+				}
+
 				m_mapCNFOPT[sCode] = refParam;
 				T_LINE_PARAM&	refData = m_mapCNFOPT[sCode];
 				return &refData;
@@ -436,6 +476,7 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 	if( nErrorCode < 0 )
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::BuildSecurity() : an error occur while building security table, marketid=%d, errorcode=%d", (int)eMarket, nErrorCode );
+		return NULL;
 	}
 
 	return &(it->second);
