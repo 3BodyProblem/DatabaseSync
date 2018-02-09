@@ -1931,7 +1931,7 @@ void Quotation::SyncSnapshot2Database()
 
 				if( NULL != pTagParam )
 				{
-					if( 1 == pTagParam->SyncFlag )
+/*					if( 1 == pTagParam->SyncFlag )
 					{
 						pTagParam->TradingVolume = tagTickLine.Volume - pTagParam->Volume;
 						pTagParam->Volume = tagTickLine.Volume;
@@ -1939,7 +1939,7 @@ void Quotation::SyncSnapshot2Database()
 						QuotationDatabase::GetDbObj().Update_Commodity( 2, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, pTagParam->TradingVolume
 							, pTagParam->FluctuationPercent, pTagParam->IsTrading );
-					}
+					}*/
 				}
 			}
 

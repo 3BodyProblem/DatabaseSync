@@ -157,6 +157,7 @@ int QuotationDatabase::RollBack()
 	{
 		int	nRet = ::mysql_rollback( &m_oMySqlHandle );
 
+		m_nTransRefCount = 0;
 		if( nRet < 0 )
 		{
 			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::RollBack() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
