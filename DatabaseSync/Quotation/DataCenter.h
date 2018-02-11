@@ -214,6 +214,16 @@ public:
 	T_LINE_PARAM*				BuildSecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam, bool bQueryOnly = false );
 
 	/**
+	 * @brief					获取商品的参数信息
+	 * @param[in]				eMarket			市场ID
+	 * @param[in]				sCode			商品代码
+	 * @param[in]				refParam		行情参数
+	 * @return					true			查询成功
+								false			查询失败
+	 */
+	bool						QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam );
+
+	/**
 	 * @brief					更新前缀
 	 * @param[in]				eMarket			市场ID
 	 * @param[in]				pszPreName		前缀内容
@@ -240,13 +250,21 @@ protected:
 	CriticalObject				m_oLock;						///< 临界区对象
 	void*						m_pQuotation;					///< 行情对象
 protected:
+	CriticalObject				m_oCS_SHL1;						///< 上证L1锁
 	T_MAP_QUO					m_mapSHL1;						///< 上证L1
+	CriticalObject				m_oCS_SHOPT;					///< 上证期权锁
 	T_MAP_QUO					m_mapSHOPT;						///< 上证期权
+	CriticalObject				m_oCS_SZL1;						///< 深圳L1锁
 	T_MAP_QUO					m_mapSZL1;						///< 深证L1
+	CriticalObject				m_oCS_SZOPT;					///< 深圳期权锁
 	T_MAP_QUO					m_mapSZOPT;						///< 深证期权
+	CriticalObject				m_oCS_CFF;						///< 中金期货锁
 	T_MAP_QUO					m_mapCFF;						///< 中金期货
+	CriticalObject				m_oCS_CFFOPT;					///< 中金期权锁
 	T_MAP_QUO					m_mapCFFOPT;					///< 中金期权
+	CriticalObject				m_oCS_CNF;						///< 商品期货锁
 	T_MAP_QUO					m_mapCNF;						///< 商品期货(上海/郑州/大连)
+	CriticalObject				m_oCS_CNFOPT;					///< 商品期权锁
 	T_MAP_QUO					m_mapCNFOPT;					///< 商品期权(上海/郑州/大连)
 protected:
 	SimpleThread				m_oThdSnapSync;					///< 快照同步线程

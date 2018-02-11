@@ -331,6 +331,107 @@ int QuotationData::UpdatePreName( enum XDFMarket eMarket, std::string& sCode, ch
 	return 0;
 }
 
+bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam )
+{
+	T_MAP_QUO::iterator it = NULL;
+	int					nErrorCode = 0;
+
+	switch( eMarket )
+	{
+	case XDF_SH:	///< 上证L1
+		{
+			CriticalLock			section( m_oCS_SHL1 );
+			it = m_mapSHL1.find( sCode );
+			if( it == m_mapSHL1.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	case XDF_SHOPT:	///< 上期
+		{
+			CriticalLock			section( m_oCS_SHOPT );
+			it = m_mapSHOPT.find( sCode );
+			if( it == m_mapSHOPT.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	case XDF_SZ:	///< 深证L1
+		{
+			CriticalLock			section( m_oCS_SZL1 );
+			it = m_mapSZL1.find( sCode );
+			if( it == m_mapSZL1.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	case XDF_SZOPT:	///< 深期
+		{
+			CriticalLock			section( m_oCS_SZOPT );
+			it = m_mapSZOPT.find( sCode );
+			if( it == m_mapSZOPT.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	case XDF_CF:	///< 中金期货
+		{
+			CriticalLock			section( m_oCS_CFF );
+			it = m_mapCFF.find( sCode );
+			if( it == m_mapCFF.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	case XDF_ZJOPT:	///< 中金期权
+		{
+			CriticalLock			section( m_oCS_CFFOPT );
+			it = m_mapCFFOPT.find( sCode );
+			if( it == m_mapCFFOPT.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	case XDF_CNF:	///< 商品期货(上海/郑州/大连)
+		{
+			CriticalLock			section( m_oCS_CNF );
+			it = m_mapCNF.find( sCode );
+			if( it == m_mapCNF.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	case XDF_CNFOPT:///< 商品期权(上海/郑州/大连)
+		{
+			CriticalLock			section( m_oCS_CNFOPT );
+			it = m_mapCNFOPT.find( sCode );
+			if( it == m_mapCNFOPT.end() )
+			{
+				return false;
+			}
+		}
+		break;
+	default:
+		nErrorCode = -1024;
+		break;
+	}
+
+	if( nErrorCode < 0 )
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::QuerySecurity() : an error occur while query security table, marketid=%d, errorcode=%d", (int)eMarket, nErrorCode );
+		return false;
+	}
+
+	return true;
+}
+
 T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam, bool bQueryOnly )
 {
 	T_MAP_QUO::iterator it = NULL;
@@ -342,6 +443,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 	{
 	case XDF_SH:	///< 上证L1
 		{
+			CriticalLock			section( m_oCS_SHL1 );
+
 			it = m_mapSHL1.find( sCode );
 			if( it == m_mapSHL1.end() )
 			{
@@ -358,6 +461,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 		break;
 	case XDF_SHOPT:	///< 上期
 		{
+			CriticalLock			section( m_oCS_SHOPT );
+
 			it = m_mapSHOPT.find( sCode );
 			if( it == m_mapSHOPT.end() )
 			{
@@ -374,6 +479,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 		break;
 	case XDF_SZ:	///< 深证L1
 		{
+			CriticalLock			section( m_oCS_SZL1 );
+
 			it = m_mapSZL1.find( sCode );
 			if( it == m_mapSZL1.end() )
 			{
@@ -390,6 +497,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 		break;
 	case XDF_SZOPT:	///< 深期
 		{
+			CriticalLock			section( m_oCS_SZOPT );
+
 			it = m_mapSZOPT.find( sCode );
 			if( it == m_mapSZOPT.end() )
 			{
@@ -406,6 +515,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 		break;
 	case XDF_CF:	///< 中金期货
 		{
+			CriticalLock			section( m_oCS_CFF );
+
 			it = m_mapCFF.find( sCode );
 			if( it == m_mapCFF.end() )
 			{
@@ -422,6 +533,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 		break;
 	case XDF_ZJOPT:	///< 中金期权
 		{
+			CriticalLock			section( m_oCS_CFFOPT );
+
 			it = m_mapCFFOPT.find( sCode );
 			if( it == m_mapCFFOPT.end() )
 			{
@@ -438,6 +551,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 		break;
 	case XDF_CNF:	///< 商品期货(上海/郑州/大连)
 		{
+			CriticalLock			section( m_oCS_CNF );
+
 			it = m_mapCNF.find( sCode );
 			if( it == m_mapCNF.end() )
 			{
@@ -454,6 +569,8 @@ T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string&
 		break;
 	case XDF_CNFOPT:///< 商品期权(上海/郑州/大连)
 		{
+			CriticalLock			section( m_oCS_CNFOPT );
+
 			it = m_mapCNFOPT.find( sCode );
 			if( it == m_mapCNFOPT.end() )
 			{
@@ -499,6 +616,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 			{
 			case sizeof(XDFAPI_StockData5):
 				{
+					CriticalLock			section( m_oCS_SHL1 );
 					XDFAPI_StockData5*		pStock = (XDFAPI_StockData5*)pSnapData;
 					T_MAP_QUO::iterator		it = m_mapSHL1.find( std::string(pStock->Code, 6 ) );
 
@@ -536,6 +654,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				break;
 			case sizeof(XDFAPI_IndexData):
 				{
+					CriticalLock			section( m_oCS_SHL1 );
 					XDFAPI_IndexData*		pStock = (XDFAPI_IndexData*)pSnapData;
 					T_MAP_QUO::iterator		it = m_mapSHL1.find( std::string(pStock->Code, 6 ) );
 
@@ -568,6 +687,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 		break;
 	case XDF_SHOPT:	///< 上期
 		{
+			CriticalLock			section( m_oCS_SHOPT );
 			XDFAPI_ShOptData*		pStock = (XDFAPI_ShOptData*)pSnapData;
 			T_MAP_QUO::iterator		it = m_mapSHOPT.find( std::string(pStock->Code, 8 ) );
 
@@ -610,6 +730,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 			{
 			case sizeof(XDFAPI_StockData5):
 				{
+					CriticalLock			section( m_oCS_SZL1 );
 					XDFAPI_StockData5*		pStock = (XDFAPI_StockData5*)pSnapData;
 					T_MAP_QUO::iterator		it = m_mapSZL1.find( std::string(pStock->Code, 6 ) );
 
@@ -648,6 +769,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				break;
 			case sizeof(XDFAPI_IndexData):
 				{
+					CriticalLock			section( m_oCS_SZL1 );
 					XDFAPI_IndexData*		pStock = (XDFAPI_IndexData*)pSnapData;
 					T_MAP_QUO::iterator		it = m_mapSZL1.find( std::string(pStock->Code, 6 ) );
 
@@ -680,6 +802,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 		break;
 	case XDF_SZOPT:	///< 深期
 		{
+			CriticalLock			section( m_oCS_SZOPT );
 			XDFAPI_SzOptData*		pStock = (XDFAPI_SzOptData*)pSnapData;
 			T_MAP_QUO::iterator		it = m_mapSZOPT.find( std::string(pStock->Code,8) );
 
@@ -718,6 +841,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 		break;
 	case XDF_CF:	///< 中金期货
 		{
+			CriticalLock			section( m_oCS_CFF );
 			XDFAPI_CffexData*		pStock = (XDFAPI_CffexData*)pSnapData;
 			T_MAP_QUO::iterator		it = m_mapCFF.find( std::string(pStock->Code,6) );
 
@@ -756,6 +880,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 		break;
 	case XDF_ZJOPT:	///< 中金期权
 		{
+			CriticalLock			section( m_oCS_CFFOPT );
 			XDFAPI_ZjOptData*		pStock = (XDFAPI_ZjOptData*)pSnapData;
 			T_MAP_QUO::iterator		it = m_mapCFFOPT.find( std::string(pStock->Code) );
 
@@ -794,6 +919,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 		break;
 	case XDF_CNF:	///< 商品期货(上海/郑州/大连)
 		{
+			CriticalLock				section( m_oCS_CNF );
 			XDFAPI_CNFutureData*		pStock = (XDFAPI_CNFutureData*)pSnapData;
 			T_MAP_QUO::iterator			it = m_mapCNF.find( std::string(pStock->Code,6) );
 
@@ -839,6 +965,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 		break;
 	case XDF_CNFOPT:///< 商品期权(上海/郑州/大连)
 		{
+			CriticalLock				section( m_oCS_CNFOPT );
 			XDFAPI_CNFutOptData*		pStock = (XDFAPI_CNFutOptData*)pSnapData;
 			T_MAP_QUO::iterator			it = m_mapCNFOPT.find( std::string(pStock->Code) );
 
