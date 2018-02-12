@@ -319,6 +319,8 @@ int QuotationData::UpdatePreName( enum XDFMarket eMarket, std::string& sCode, ch
 	{
 	case XDF_SZ:	///< 深证L1
 		{
+			CriticalLock			section( m_oCS_SZL1 );
+
 			T_MAP_QUO::iterator it = m_mapSZL1.find( sCode );
 			if( it == m_mapSZL1.end() )
 			{
@@ -341,6 +343,7 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 	case XDF_SH:	///< 上证L1
 		{
 			CriticalLock			section( m_oCS_SHL1 );
+
 			it = m_mapSHL1.find( sCode );
 			if( it == m_mapSHL1.end() )
 			{
