@@ -344,7 +344,7 @@ int Quotation::SaveShLv1()
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
-		QuotationDatabase::GetDbObj().StartTransaction();
+		QuotationDatabase::GetDbObj().StartTransaction( XDF_SH );
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -402,14 +402,14 @@ int Quotation::SaveShLv1()
 			if( NULL != pTagParam )
 			{
 				nNum++;
-				QuotationDatabase::GetDbObj().Replace_Commodity( pTagParam->Type, 1, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
+				QuotationDatabase::GetDbObj().Replace_Commodity( XDF_SH, pTagParam->Type, 1, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
 					, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.OpenPx, tagTickLine.SettlePx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx
 					, pTagParam->FluctuationPercent, tagTickLine.Volume, pTagParam->TradingVolume, tagTickLine.Amount, pTagParam->IsTrading, pTagParam->TradingDate, 0, pTagParam->ClassID );
 			}
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
-		QuotationDatabase::GetDbObj().Commit();						///< 提交mysql事务
+		QuotationDatabase::GetDbObj().Commit( XDF_SH );				///< 提交mysql事务
 	}
 
 	if( NULL != pszCodeBuf )
@@ -541,7 +541,7 @@ int Quotation::SaveShOpt()
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
-		QuotationDatabase::GetDbObj().StartTransaction();
+		QuotationDatabase::GetDbObj().StartTransaction( XDF_SHOPT );
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -570,14 +570,14 @@ int Quotation::SaveShOpt()
 			if( NULL != pTagParam )
 			{
 				nNum++;
-				QuotationDatabase::GetDbObj().Replace_Commodity( pTagParam->Type, 1, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
+				QuotationDatabase::GetDbObj().Replace_Commodity( XDF_SHOPT, pTagParam->Type, 1, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
 					, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.OpenPx, tagTickLine.SettlePx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx
 					, pTagParam->FluctuationPercent, tagTickLine.Volume, pTagParam->TradingVolume, tagTickLine.Amount, pTagParam->IsTrading, pTagParam->TradingDate, 0, pTagParam->ClassID );
 			}
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
-		QuotationDatabase::GetDbObj().Commit();
+		QuotationDatabase::GetDbObj().Commit( XDF_SHOPT );
 	}
 
 	if( NULL != pszCodeBuf )
@@ -755,7 +755,7 @@ int Quotation::SaveSzLv1()
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
-		QuotationDatabase::GetDbObj().StartTransaction();
+		QuotationDatabase::GetDbObj().StartTransaction( XDF_SZ );
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -813,14 +813,14 @@ int Quotation::SaveSzLv1()
 			if( NULL != pTagParam )
 			{
 				nNum++;
-				QuotationDatabase::GetDbObj().Replace_Commodity( pTagParam->Type, 2, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
+				QuotationDatabase::GetDbObj().Replace_Commodity( XDF_SZ, pTagParam->Type, 2, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
 					, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.OpenPx, tagTickLine.SettlePx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx
 					, pTagParam->FluctuationPercent, tagTickLine.Volume, pTagParam->TradingVolume, tagTickLine.Amount, pTagParam->IsTrading, pTagParam->TradingDate, 0, pTagParam->ClassID );
 			}
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
-		QuotationDatabase::GetDbObj().Commit();
+		QuotationDatabase::GetDbObj().Commit( XDF_SZ );
 	}
 
 	if( NULL != pszCodeBuf )
@@ -951,7 +951,7 @@ int Quotation::SaveSzOpt()
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
-		QuotationDatabase::GetDbObj().StartTransaction();
+		QuotationDatabase::GetDbObj().StartTransaction( XDF_SZOPT );
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -982,14 +982,14 @@ int Quotation::SaveSzOpt()
 
 			if( NULL != pTagParam )
 			{
-				QuotationDatabase::GetDbObj().Replace_Commodity( pTagParam->Type, 2, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
+				QuotationDatabase::GetDbObj().Replace_Commodity( XDF_SZOPT, pTagParam->Type, 2, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
 					, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.OpenPx, tagTickLine.SettlePx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx
 					, pTagParam->FluctuationPercent, tagTickLine.Volume, pTagParam->TradingVolume, tagTickLine.Amount, pTagParam->IsTrading, pTagParam->TradingDate, 0, pTagParam->ClassID );
 			}
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
-		QuotationDatabase::GetDbObj().Commit();
+		QuotationDatabase::GetDbObj().Commit( XDF_SZOPT );
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1120,7 +1120,7 @@ int Quotation::SaveCFF()
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
-		QuotationDatabase::GetDbObj().StartTransaction();
+		QuotationDatabase::GetDbObj().StartTransaction( XDF_CF );
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -1153,14 +1153,14 @@ int Quotation::SaveCFF()
 			if( NULL != pTagParam )
 			{
 				nNum++;
-				QuotationDatabase::GetDbObj().Replace_Commodity( pTagParam->Type, 3, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
+				QuotationDatabase::GetDbObj().Replace_Commodity( XDF_CF, pTagParam->Type, 3, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
 					, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.OpenPx, tagTickLine.SettlePx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx
 					, pTagParam->FluctuationPercent, tagTickLine.Volume, pTagParam->TradingVolume, tagTickLine.Amount, pTagParam->IsTrading, pTagParam->TradingDate, 0, pTagParam->ClassID );
 			}
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
-		QuotationDatabase::GetDbObj().Commit();
+		QuotationDatabase::GetDbObj().Commit( XDF_CF );
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1439,7 +1439,7 @@ int Quotation::SaveCNF()
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
-		QuotationDatabase::GetDbObj().StartTransaction();
+		QuotationDatabase::GetDbObj().StartTransaction( XDF_CNF );
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -1473,14 +1473,14 @@ int Quotation::SaveCNF()
 			if( NULL != pTagParam )
 			{
 				nNum++;
-				QuotationDatabase::GetDbObj().Replace_Commodity( pTagParam->Type, 4, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
+				QuotationDatabase::GetDbObj().Replace_Commodity( XDF_CNF, pTagParam->Type, 4, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
 					, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.OpenPx, tagTickLine.SettlePx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx
 					, pTagParam->FluctuationPercent, tagTickLine.Volume, pTagParam->TradingVolume, tagTickLine.Amount, pTagParam->IsTrading, pTagParam->TradingDate, 0, pTagParam->ClassID );
 			}
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
-		QuotationDatabase::GetDbObj().Commit();
+		QuotationDatabase::GetDbObj().Commit( XDF_CNF );
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1614,7 +1614,7 @@ int Quotation::SaveCNFOPT()
 		char*				pbuf = pszCodeBuf+m +sizeof(XDFAPI_UniMsgHead);
 		int					MsgCount = pMsgHead->MsgCount;
 
-		QuotationDatabase::GetDbObj().StartTransaction();
+		QuotationDatabase::GetDbObj().StartTransaction( XDF_CNFOPT );
 		for( int i = 0; i < MsgCount; i++ )
 		{
 			T_LINE_PARAM*	pTagParam = NULL;
@@ -1647,14 +1647,14 @@ int Quotation::SaveCNFOPT()
 			if( NULL != pTagParam )
 			{
 				nNum++;
-				QuotationDatabase::GetDbObj().Replace_Commodity( pTagParam->Type, 4, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
+				QuotationDatabase::GetDbObj().Replace_Commodity( XDF_CNFOPT, pTagParam->Type, 4, tagTickLine.Code, pTagParam->Name, pTagParam->LotSize, pTagParam->ContractMulti, pTagParam->PriceTick, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx
 					, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.OpenPx, tagTickLine.SettlePx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx
 					, pTagParam->FluctuationPercent, tagTickLine.Volume, pTagParam->TradingVolume, tagTickLine.Amount, pTagParam->IsTrading, pTagParam->TradingDate, 0, pTagParam->ClassID );
 			}
 		}
 
 		m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
-		QuotationDatabase::GetDbObj().Commit();
+		QuotationDatabase::GetDbObj().Commit( XDF_CNFOPT );
 	}
 
 	if( NULL != pszCodeBuf )
@@ -1764,13 +1764,13 @@ void Quotation::SyncNametable2Database()
 			catch( std::exception& err )
 			{
 				QuoCollector::GetCollector()->OnLog( TLV_WARN, "Quotation::SyncNametable2Database() : Market(%d), exception : %s", nMkID, err.what() );
-				QuotationDatabase::GetDbObj().RollBack();
+				QuotationDatabase::GetDbObj().RollBack( (enum XDFMarket)nMkID );
 				continue;
 			}
 			catch ( ... )
 			{
 				QuoCollector::GetCollector()->OnLog( TLV_WARN, "Quotation::SyncNametable2Database() : Market(%d), unknow exception", nMkID );
-				QuotationDatabase::GetDbObj().RollBack();
+				QuotationDatabase::GetDbObj().RollBack( (enum XDFMarket)nMkID );
 				continue;
 			}
 
@@ -1796,7 +1796,7 @@ void Quotation::SyncSnapshot2Database()
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SH, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().StartTransaction();
+			QuotationDatabase::GetDbObj().StartTransaction( XDF_SH );
 		}
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -1832,7 +1832,7 @@ void Quotation::SyncSnapshot2Database()
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
 						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
-						QuotationDatabase::GetDbObj().Update_Commodity( 1, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						QuotationDatabase::GetDbObj().Update_Commodity( XDF_SH, 1, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
 					}
@@ -1842,7 +1842,7 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().Commit();
+			QuotationDatabase::GetDbObj().Commit( XDF_SH );
 		}
 	}
 
@@ -1851,7 +1851,7 @@ void Quotation::SyncSnapshot2Database()
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SHOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().StartTransaction();
+			QuotationDatabase::GetDbObj().StartTransaction( XDF_SHOPT );
 		}
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -1880,7 +1880,7 @@ void Quotation::SyncSnapshot2Database()
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
 						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
-						QuotationDatabase::GetDbObj().Update_Commodity( 1, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						QuotationDatabase::GetDbObj().Update_Commodity( XDF_SHOPT, 1, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
 					}
@@ -1890,7 +1890,7 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().Commit();
+			QuotationDatabase::GetDbObj().Commit( XDF_SHOPT );
 		}
 	}
 
@@ -1899,7 +1899,7 @@ void Quotation::SyncSnapshot2Database()
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SZ, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().StartTransaction();
+			QuotationDatabase::GetDbObj().StartTransaction( XDF_SZ );
 		}
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -1935,7 +1935,7 @@ void Quotation::SyncSnapshot2Database()
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
 						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
-						QuotationDatabase::GetDbObj().Update_Commodity( 2, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						QuotationDatabase::GetDbObj().Update_Commodity( XDF_SZ, 2, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
 					}
@@ -1945,7 +1945,7 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().Commit();
+			QuotationDatabase::GetDbObj().Commit( XDF_SZ );
 		}
 	}
 
@@ -1954,7 +1954,7 @@ void Quotation::SyncSnapshot2Database()
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_SZOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().StartTransaction();
+			QuotationDatabase::GetDbObj().StartTransaction( XDF_SZOPT );
 		}
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -1983,7 +1983,7 @@ void Quotation::SyncSnapshot2Database()
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
 						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
-						QuotationDatabase::GetDbObj().Update_Commodity( 2, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						QuotationDatabase::GetDbObj().Update_Commodity( XDF_SZOPT, 2, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
 					}
@@ -1993,7 +1993,7 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().Commit();
+			QuotationDatabase::GetDbObj().Commit( XDF_SZOPT );
 		}
 	}
 
@@ -2002,7 +2002,7 @@ void Quotation::SyncSnapshot2Database()
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CF, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().StartTransaction();
+			QuotationDatabase::GetDbObj().StartTransaction( XDF_CF );
 		}
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -2031,7 +2031,7 @@ void Quotation::SyncSnapshot2Database()
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
 						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
-						QuotationDatabase::GetDbObj().Update_Commodity( 3, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						QuotationDatabase::GetDbObj().Update_Commodity( XDF_CF, 3, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
 					}
@@ -2041,7 +2041,7 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().Commit();
+			QuotationDatabase::GetDbObj().Commit( XDF_CF );
 		}
 	}
 
@@ -2050,7 +2050,7 @@ void Quotation::SyncSnapshot2Database()
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CNF, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );		///< 获取快照
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().StartTransaction();
+			QuotationDatabase::GetDbObj().StartTransaction( XDF_CNF );
 		}
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -2079,7 +2079,7 @@ void Quotation::SyncSnapshot2Database()
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
 						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;						///< 涨跌幅度(用收盘价计算)
-						QuotationDatabase::GetDbObj().Update_Commodity( 4, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						QuotationDatabase::GetDbObj().Update_Commodity( XDF_CNF, 4, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
 					}
@@ -2089,7 +2089,7 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().Commit();
+			QuotationDatabase::GetDbObj().Commit( XDF_CNF );
 		}
 	}
 
@@ -2098,7 +2098,7 @@ void Quotation::SyncSnapshot2Database()
 	{
 		nErrorCode = m_oQuotPlugin->GetLastMarketDataAll( XDF_CNFOPT, m_pDataBuffer, MAX_SNAPSHOT_BUFFER_SIZE );	///< 获取快照
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().StartTransaction();
+			QuotationDatabase::GetDbObj().StartTransaction( XDF_CNFOPT );
 		}
 		for( int m = 0; m < nErrorCode; )
 		{
@@ -2127,7 +2127,7 @@ void Quotation::SyncSnapshot2Database()
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
 						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;					///< 涨跌幅度(用收盘价计算)
-						QuotationDatabase::GetDbObj().Update_Commodity( 4, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
+						QuotationDatabase::GetDbObj().Update_Commodity( XDF_CNFOPT, 4, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
 					}
@@ -2137,7 +2137,7 @@ void Quotation::SyncSnapshot2Database()
 			m += (sizeof(XDFAPI_UniMsgHead) + pMsgHead->MsgLen - sizeof(pMsgHead->MsgCount));
 		}
 		if( nErrorCode > 0 ) {
-			QuotationDatabase::GetDbObj().Commit();
+			QuotationDatabase::GetDbObj().Commit( XDF_CNFOPT );
 		}
 	}
 

@@ -6,6 +6,7 @@
 #include "SvrStatus.h"
 #include "../Infrastructure/File.h"
 #include "../DatabaseSync.h"
+#include "../Database/QLMatchCH.h"
 #include "../Database/DBOperation.h"
 
 
@@ -194,6 +195,7 @@ QuotationData::~QuotationData()
 int QuotationData::Initialize( void* pQuotation )
 {
 	int					nErrorCode = 0;
+	static	bool		bInitMatchLib = false;
 
 	Release();
 	m_pQuotation = pQuotation;
@@ -214,16 +216,15 @@ int QuotationData::Initialize( void* pQuotation )
 		}
 	}
 
-	if( 0 != QuotationDatabase::GetDbObj().Initialize() )
+	if( false == bInitMatchLib )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 initialize QuotationDatabase obj." );
-		return -3;
-	}
+		if( FALSE == CQLMatchCH::InitStaticData() )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 initialize QLMatchCH library" );
+			return -2;
+		}
 
-	if( 0 != QuotationDatabase::GetDbObj().EstablishConnection() )
-	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::Initialize() : failed 2 establish connection 4 QuotationDatabase obj." );
-		return -4;
+		bInitMatchLib = true;
 	}
 
 	return 0;

@@ -5,8 +5,10 @@
 
 
 QuotationDatabase::QuotationDatabase()
- : m_pMysqlConnection( NULL ), m_nTransRefCount( 0 )
 {
+	::memset( &m_vctTransRefCount, 0, sizeof(m_vctTransRefCount) );
+	::memset( &m_pMysqlConnectionList, 0, sizeof(m_pMysqlConnectionList) );
+	::memset( &m_vctMySqlHandle, 0, sizeof(m_vctMySqlHandle) );
 }
 
 QuotationDatabase::~QuotationDatabase()
@@ -21,20 +23,14 @@ QuotationDatabase& QuotationDatabase::GetDbObj()
 	return obj;
 }
 
-int QuotationDatabase::Initialize()
+int QuotationDatabase::Initialize( enum XDFMarket eMkID )
 {
-	MYSQL*	pRetHandle = ::mysql_init( &m_oMySqlHandle );
+	MYSQL*			pRetHandle = ::mysql_init( &(m_vctMySqlHandle[eMkID]) );
 
 	if( NULL == pRetHandle )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 call func. ::mysql_init(), %s", ::mysql_error( &m_oMySqlHandle ) );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 call func. ::mysql_init(), %s", ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
 		return -1;
-	}
-
-	if( FALSE == CQLMatchCH::InitStaticData() )
-	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 initialize QLMatchCH library" );
-		return -2;
 	}
 
 	return 0;
@@ -42,57 +38,75 @@ int QuotationDatabase::Initialize()
 
 void QuotationDatabase::Release()
 {
-	if( NULL != m_pMysqlConnection )
+	for( int n = 0; n < 64; n++ )
 	{
-		m_pMysqlConnection = NULL;
-		::mysql_close( &m_oMySqlHandle );
+		if( NULL != m_pMysqlConnectionList[n] )
+		{
+			m_pMysqlConnectionList[n] = NULL;
+			::mysql_close( &(m_vctMySqlHandle[n]) );
+		}
 	}
 }
 
-int QuotationDatabase::EstablishConnection()
+int QuotationDatabase::EstablishConnection( enum XDFMarket eMkID )
 {
 	QuoCollector::GetCollector()->OnLog( TLV_INFO, "QuotationDatabase::EstablishConnection() : building database connection ......" );
 
-	m_pMysqlConnection = ::mysql_real_connect( &m_oMySqlHandle
-											, Configuration::GetConfig().GetDbHost().c_str()
-											, Configuration::GetConfig().GetDbAccount().c_str()
-											, Configuration::GetConfig().GetDbPassword().c_str()
-											, Configuration::GetConfig().GetDbTableName().c_str()
-											, Configuration::GetConfig().GetDbPort()
-											, NULL, 0 );
+	m_pMysqlConnectionList[eMkID] = ::mysql_real_connect( &(m_vctMySqlHandle[eMkID])
+														, Configuration::GetConfig().GetDbHost().c_str()
+														, Configuration::GetConfig().GetDbAccount().c_str()
+														, Configuration::GetConfig().GetDbPassword().c_str()
+														, Configuration::GetConfig().GetDbTableName().c_str()
+														, Configuration::GetConfig().GetDbPort()
+														, NULL, 0 );
 
-	if( NULL == m_pMysqlConnection )
+	if( NULL == m_pMysqlConnectionList[eMkID] )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 establish database connection(%s) ......", ::mysql_error( &m_oMySqlHandle ) );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 establish database connection(%s) ......", ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
 		return -1;
 	}
 
 	QuoCollector::GetCollector()->OnLog( TLV_INFO, "QuotationDatabase::EstablishConnection() : database connection has been established ......" );
 
-	if( 0 != ::mysql_select_db( &m_oMySqlHandle, Configuration::GetConfig().GetDbTableName().c_str() ) )
+	if( 0 != ::mysql_select_db( &(m_vctMySqlHandle[eMkID]), Configuration::GetConfig().GetDbTableName().c_str() ) )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 select table, (%s) ......", ::mysql_error( &m_oMySqlHandle ) );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 select table, (%s) ......", ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
 		return -2;
 	}
 
-	if( 0 < ExecuteSql( "set names gbk;" ) )
+	if( 0 < ExecuteSql( eMkID, "set names gbk;" ) )
 	{
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 set mysql client character set 2 gbk, (%s) ......", ::mysql_error( &m_oMySqlHandle ) );
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Initialize() : failed 2 set mysql client character set 2 gbk, (%s) ......", ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
 		return -3;
 	}
 
 	return 0;
 }
 
-int QuotationDatabase::ExecuteSql( const char* pszSqlCmd )
+int QuotationDatabase::ExecuteSql( enum XDFMarket eMkID, const char* pszSqlCmd )
 {
-	if( NULL != m_pMysqlConnection && NULL != pszSqlCmd )
+	if( NULL == m_pMysqlConnectionList[eMkID] )
 	{
-		int	nRet = ::mysql_query( &m_oMySqlHandle, pszSqlCmd );
+		if( 0 != Initialize( eMkID ) )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ExecuteSql() : failed 2 initialize QuotationDatabase obj." );
+			return -1;
+		}
+
+		if( 0 != EstablishConnection( eMkID ) )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::ExecuteSql() : failed 2 establish connection 4 QuotationDatabase obj." );
+			return -2;
+		}
+	}
+
+	if( NULL != m_pMysqlConnectionList[eMkID] && NULL != pszSqlCmd )
+	{
+		int	nRet = ::mysql_query( &(m_vctMySqlHandle[eMkID]), pszSqlCmd );
 
 		if( nRet < 0 )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::ExecuteSql() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::ExecuteSql() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
 		}
 
 		return nRet;
@@ -101,24 +115,39 @@ int QuotationDatabase::ExecuteSql( const char* pszSqlCmd )
 	return -1024;
 }
 
-int QuotationDatabase::StartTransaction()
+int QuotationDatabase::StartTransaction( enum XDFMarket eMkID )
 {
-	if( NULL != m_pMysqlConnection )
+	if( NULL == m_pMysqlConnectionList[eMkID] )
 	{
-		if( m_nTransRefCount > 0 )
+		if( 0 != Initialize( eMkID ) )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::StartTransaction() : failed 2 initialize QuotationDatabase obj." );
+			return -1;
+		}
+
+		if( 0 != EstablishConnection( eMkID ) )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::StartTransaction() : failed 2 establish connection 4 QuotationDatabase obj." );
+			return -2;
+		}
+	}
+
+	if( NULL != m_pMysqlConnectionList[eMkID] )
+	{
+		if( m_vctTransRefCount[eMkID] > 0 )
 		{
 			return 1;
 		}
 
-		int	nRet = ::mysql_query( &m_oMySqlHandle, "BEGIN TRANSACTION;" );
+		int	nRet = ::mysql_query( &(m_vctMySqlHandle[eMkID]), "BEGIN TRANSACTION;" );
 
 		if( nRet < 0 )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::StartTransaction() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
-			return -1;
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::StartTransaction() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
+			return -3;
 		}
 
-		m_nTransRefCount++;
+		m_vctTransRefCount[eMkID]++;
 
 		return nRet;
 	}
@@ -126,22 +155,22 @@ int QuotationDatabase::StartTransaction()
 	return -1024;
 }
 
-int QuotationDatabase::Commit()
+int QuotationDatabase::Commit( enum XDFMarket eMkID )
 {
-	if( NULL != m_pMysqlConnection )
+	if( NULL != m_pMysqlConnectionList[eMkID] )
 	{
-		if( 0 == m_nTransRefCount )
+		if( 0 == m_vctTransRefCount[eMkID] )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Commit() : [ERROR] transaction is not available. refcount = %d", m_nTransRefCount );
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Commit() : [ERROR] transaction is not available. refcount = %d", m_vctTransRefCount[eMkID] );
 			return -1;
 		}
 
-		int	nRet = ::mysql_commit( &m_oMySqlHandle );
+		int	nRet = ::mysql_commit( &(m_vctMySqlHandle[eMkID]) );
 
-		m_nTransRefCount = 0;
+		m_vctTransRefCount[eMkID] = 0;
 		if( nRet < 0 )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Commit() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::Commit() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
 			return -2;
 		}
 
@@ -151,16 +180,16 @@ int QuotationDatabase::Commit()
 	return -1024;
 }
 
-int QuotationDatabase::RollBack()
+int QuotationDatabase::RollBack( enum XDFMarket eMkID )
 {
-	if( NULL != m_pMysqlConnection )
+	if( NULL != m_pMysqlConnectionList[eMkID] )
 	{
-		int	nRet = ::mysql_rollback( &m_oMySqlHandle );
+		int	nRet = ::mysql_rollback( &(m_vctMySqlHandle[eMkID]) );
 
-		m_nTransRefCount = 0;
+		m_vctTransRefCount[eMkID] = 0;
 		if( nRet < 0 )
 		{
-			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::RollBack() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &m_oMySqlHandle ) );
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationDatabase::RollBack() : errorcode = %d, [ERROR] %s", nRet, ::mysql_error( &(m_vctMySqlHandle[eMkID]) ) );
 		}
 
 		return nRet;
@@ -169,7 +198,7 @@ int QuotationDatabase::RollBack()
 	return -1024;
 }
 
-int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, const char* pszCode, const char* pszName
+int QuotationDatabase::Replace_Commodity( enum XDFMarket eMkID, short nTypeID, short nExchangeID, const char* pszCode, const char* pszName
 										, int nLotSize, int nContractMulti, double dPriceTick, double dPreClose, double dPreSettle
 										, double dUpperPrice, double dLowerPrice, double dPrice, double dOpenPrice, double dSettlePrice
 										, double dClosePrice, double dBid1Price, double dAsk1Price, double dHighPrice, double dLowPrice
@@ -224,10 +253,10 @@ int QuotationDatabase::Replace_Commodity( short nTypeID, short nExchangeID, cons
 	}
 
 	//::printf( "%s\n", pszSqlCmd );
-	return ExecuteSql( pszSqlCmd );
+	return ExecuteSql( eMkID, pszSqlCmd );
 }
 
-int QuotationDatabase::Update_Commodity( short nExchangeID, const char* pszCode, double dPreClosePx, double dPreSettlePx, double dUpperPx, double dLowerPx, double dLastPx, double dSettlePx
+int QuotationDatabase::Update_Commodity( enum XDFMarket eMkID, short nExchangeID, const char* pszCode, double dPreClosePx, double dPreSettlePx, double dUpperPx, double dLowerPx, double dLastPx, double dSettlePx
 										, double dOpenPx, double dClosePx, double dBid1Px, double dAsk1Px, double dHighPx, double dLowPx, double dAmount, unsigned __int64 nVolume, unsigned int nTradingVolume
 										, double dFluctuationPercent, short nIsTrading )
 {
@@ -243,7 +272,7 @@ int QuotationDatabase::Update_Commodity( short nExchangeID, const char* pszCode,
 	}
 
 	//::printf( "%s\n", pszSqlCmd );
-	return ExecuteSql( pszSqlCmd );
+	return ExecuteSql( eMkID, pszSqlCmd );
 }
 
 

@@ -27,10 +27,11 @@ public:
 
 	/**
 	 * @brief					初始化数据库对象
+	 * @param[in]				eMkID					市场编号
 	 * @return					==0						初始化成功
 								!=0						失败
 	 */
-	int							Initialize();
+	int							Initialize( enum XDFMarket eMkID );
 
 	/**
 	 * @brief					释放资源
@@ -39,35 +40,39 @@ public:
 
 	/**
 	 * @brief					建立数据库连接
+	 * @param[in]				eMkID					市场编号
 	 * @return					==0						成功
 								!=0						失败
 	 */
-	int							EstablishConnection();
+	int							EstablishConnection( enum XDFMarket eMkID );
 
 public:
 	/**
 	 * @brief					开启事务
+	 * @param[in]				eMkID					市场编号
 	 * @return					==0						成功
 								!=0						失败
 	 */
-	int							StartTransaction();
+	int							StartTransaction( enum XDFMarket eMkID );
 
 	/**
 	 * @brief					提交事务
+	 * @param[in]				eMkID					市场编号
 	 * @return					==0						成功
 								!=0						失败
 	 */
-	int							Commit();
+	int							Commit( enum XDFMarket eMkID );
 
 	/**
 	 * @brief					回退事务
 	 * @return					==0						成功
 								!=0						失败
 	 */
-	int							RollBack();
+	int							RollBack( enum XDFMarket eMkID );
 
 	/**
 	 * @brief					新增一条商品记录
+	 * @param[in]				eMkID					市场编号
 	 * @param[in]				nType					商品类型
 	 * @param[in]				nExchangeID				市场代码, '0'：未知 '1'：SSE（上海证劵交易所） '2'：SZSE（深圳证劵交易所） '3'：cffEX（中国金融期货交易） '4'：dcE （大连商品期货交易所） '5'：ZcE（郑州商品期货交易所） '6'：SHfE （上海期货交易所）
 	 * @param[in]				pszCode					商品代码
@@ -97,7 +102,7 @@ public:
 	 * @param[in]				pszClassID				分类ID
 	 * @return					返回insert into/replace语句返回的affect number数量
 	 */
-	int							Replace_Commodity( short nTypeID, short nExchangeID, const char* pszCode, const char* pszName
+	int							Replace_Commodity( enum XDFMarket eMkID, short nTypeID, short nExchangeID, const char* pszCode, const char* pszName
 												, int nLotSize, int nContractMulti, double dPriceTick, double dPreClose, double dPreSettle
 												, double dUpperPrice, double dLowerPrice, double dPrice, double dOpenPrice, double dSettlePrice
 												, double dClosePrice, double dBid1Price, double dAsk1Price, double dHighPrice, double dLowPrice
@@ -106,6 +111,7 @@ public:
 
 	/**
 	 * @brief					更新一条商品快照信息
+	 * @param[in]				eMkID					市场编号
 	 * @param[in]				nExchangeID				市场代码, '0'：未知 '1'：SSE（上海证劵交易所） '2'：SZSE（深圳证劵交易所） '3'：cffEX（中国金融期货交易） '4'：dcE （大连商品期货交易所） '5'：ZcE（郑州商品期货交易所） '6'：SHfE （上海期货交易所）
 	 * @param[in]				pszCode					商品代码
 	 * @param[in]				dPreClosePx				昨收价格
@@ -126,7 +132,7 @@ public:
 	 * @param[in]				dFluctuationPercent		涨跌幅度(用收盘价计算)
 	 * @param[in]				nIsTrading				是否交易标记
 	 */
-	int							Update_Commodity( short nExchangeID, const char* pszCode, double dPreClosePx, double dPreSettlePx, double dUpperPx, double dLowerPx, double dLastPx, double dSettlePx
+	int							Update_Commodity( enum XDFMarket eMkID, short nExchangeID, const char* pszCode, double dPreClosePx, double dPreSettlePx, double dUpperPx, double dLowerPx, double dLastPx, double dSettlePx
 												, double dOpenPx, double dClosePx, double dBid1Px, double dAsk1Px, double dHighPx, double dLowPx, double dAmount, unsigned __int64 nVolume, unsigned int nTradingVolume
 												, double dFluctuationPercent, short nIsTrading );
 
@@ -134,15 +140,16 @@ protected:
 	/**
 	 * @brief					执行sql语句
 	 * @param[in]				pszSqlCmd				sql语句
+	 * @param[in]				eMkID					市场编号
 	 * @return					==0						执行成功
 								!=0						失败
 	 */
-	__inline int				ExecuteSql( const char* pszSqlCmd );
+	__inline int				ExecuteSql( enum XDFMarket eMkID, const char* pszSqlCmd );
 
 protected:
-	MYSQL						m_oMySqlHandle;			///< mysql访问句柄
-	MYSQL*						m_pMysqlConnection;		///< connection handle
-	unsigned int				m_nTransRefCount;		///< 事务开启的引用计数
+	MYSQL						m_vctMySqlHandle[64];			///< mysql访问句柄
+	MYSQL*						m_pMysqlConnectionList[64];		///< connection handle
+	unsigned int				m_vctTransRefCount[64];			///< 事务开启的引用计数
 };
 
 
