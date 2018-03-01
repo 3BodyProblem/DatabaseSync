@@ -3,7 +3,25 @@
 #include "DatabaseSync.h"
 #include "Configuration.h"
 #include "Quotation/SvrStatus.h"
+#include "QWinCALib/MQWinCAStruct.hpp"
 #include "Database/QLMatchCH.h"
+
+
+#if _DEBUG
+#pragma comment( lib, ".\\QWinCALib\\libhasp_windows_107458.lib" );
+#pragma comment( lib, ".\\QWinCALib\\SecurityLibraryD.lib" );
+#pragma comment( lib, ".\\QWinCALib\\ssleay32D.lib" );
+#pragma comment( lib, ".\\QWinCALib\\libeay32D.lib" );
+#pragma comment( lib, ".\\QWinCALib\\BaseLibraryD.lib" );
+#pragma comment( lib, ".\\QWinCALib\\QWinCALibraryD.lib" );
+#else
+#pragma comment( lib, ".\\QWinCALib\\libhasp_windows_107458.lib" );
+#pragma comment( lib, ".\\QWinCALib\\SecurityLibraryR.lib" );
+#pragma comment( lib, ".\\QWinCALib\\ssleay32R.lib" );
+#pragma comment( lib, ".\\QWinCALib\\libeay32R.lib" );
+#pragma comment( lib, ".\\QWinCALib\\BaseLibraryR.lib" );
+#pragma comment( lib, ".\\QWinCALib\\QWinCALibraryR.lib" );
+#endif
 
 
 char*	__BasePath(char *in)
@@ -305,7 +323,7 @@ std::string ShortSpell::GetShortSpell( std::string sCode, std::string sName )
 
 
 Configuration::Configuration()
- : m_nDBPort( 5873 )
+ : m_nDBPort( 5873 ), m_nCustomID( 0 )
 {
 	///< 配置各市场的传输驱动所在目录名称
 	m_vctMkNameCfg.push_back( "cff_setting" );
@@ -419,7 +437,69 @@ int Configuration::Initialize()
 	///< 加载CSV文件
 	ShortSpell::GetObj().LoadFromCSV();
 
+	m_nCustomID = oIniFile.getIntValue( std::string("CA"), std::string("CustomID"), nErrCode );
+	if( 0 != nErrCode )	{
+		m_nCustomID = 0;
+		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : CustomID is not exist" );
+	}
+
+	m_sCAFilePath = oIniFile.getStringValue( std::string("CA"), std::string("FilePath"), nErrCode );
+	if( 0 != nErrCode )	{
+		m_sCAFilePath = "";
+		QuoCollector::GetCollector()->OnLog( TLV_WARN, "Configuration::Initialize() : CA File Path is not exist" );
+	}
+
+	if( false == CheckCA() )
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Configuration::Initialize() : invalid CA file (%s)", m_sCAFilePath.c_str() );
+		return -1024;
+	}
+
 	return 0;
+}
+
+bool Configuration::CheckCA()
+{
+	bool					bReturn = false;
+	tagQWinCA_Certificate	tagCertificate = { 0 };
+	char					pszError[1024*8] = { 0 };
+	MQWinCA_Interface*		pCAInterface = QWinCA_CreateObject();
+
+	if( NULL != pCAInterface )
+	{
+		if( false == (bReturn=pCAInterface->GetQWinCA( m_sCAFilePath.c_str(), &tagCertificate, pszError, sizeof(pszError) )) )
+		{
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Configuration::CheckCA() : failed 2 load Certificate" );
+		}
+		else
+		{
+			bReturn = false;
+
+			for( unsigned int n = 0; n < tagCertificate.sProductInfo.uiProductRecordCount; n++ )
+			{
+				tagQWinCA_ProductRecord&	refProductRecord = tagCertificate.sProductInfo.sProductRecord[n];
+
+				if( NULL != ::strstr( refProductRecord.szRightInfo, "8001" ) )
+				{
+					if( DateTime::Now().DateToLong() >= refProductRecord.uiStartDate && DateTime::Now().DateToLong() <= refProductRecord.uiEndDate )
+					{
+						bReturn = true;
+						break;
+					}
+				}
+			}
+		}
+
+		QWinCA_DeleteObject( pCAInterface );
+
+		return bReturn;
+	}
+	else
+	{
+		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "Configuration::CheckCA() : invalid MQWinCA_Interface* pointer" );
+	}
+
+	return false;
 }
 
 void Configuration::ParseAndSaveMkConfig( inifile::IniFile& refIniFile )

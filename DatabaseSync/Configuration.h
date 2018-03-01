@@ -158,6 +158,11 @@ protected:
 	 */
 	void						ParseAndSaveMkConfig( inifile::IniFile& refIniFile );
 
+	/**
+	 * @brief					检查证书是否有效
+	 */
+	bool						CheckCA();
+
 protected:
 	MAP_MK2TYPESET				m_mapMkID2TypeSet;			///< 各市场的商品类型对应的白名单集合
 	std::vector<std::string>	m_vctMkNameCfg;				///< 市场名称列表
@@ -167,6 +172,9 @@ protected:
 	std::string					m_sDBPswd;					///< mysql密码
 	std::string					m_sDBTable;					///< mysql写入表
 	unsigned short				m_nDBPort;					///< mysql端口
+protected:
+	std::string					m_sCAFilePath;				///< CA文件路径
+	unsigned int				m_nCustomID;				///< 客户编号
 };
 
 
