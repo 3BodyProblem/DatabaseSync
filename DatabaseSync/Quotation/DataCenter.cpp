@@ -230,6 +230,16 @@ int QuotationData::Initialize( void* pQuotation )
 	return 0;
 }
 
+bool QuotationData::StopThreads()
+{
+	SimpleThread::StopAllThread();
+	SimpleThread::Sleep( 3000 );
+	m_oThdSnapSync.Join( 5000 );
+	m_oThdNametableSync.Join( 5000 );
+
+	return true;
+}
+
 void QuotationData::Release()
 {
 	m_mapModuleStatus.clear();

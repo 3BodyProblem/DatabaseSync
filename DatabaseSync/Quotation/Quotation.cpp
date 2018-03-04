@@ -150,7 +150,7 @@ void Quotation::Halt()
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::Halt() : ............ Halting .............." );
 
-		m_oWorkStatus = ET_SS_UNACTIVE;			///< 更新Quotation会话的状态
+//		m_oWorkStatus = ET_SS_UNACTIVE;			///< 更新Quotation会话的状态
 //		m_oQuotPlugin.Release();				///< 释放行情源插件
 //		m_oQuoDataCenter.Release();				///< 释放行情数据资源
 
@@ -164,9 +164,10 @@ int Quotation::Release()
 	{
 		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::Release() : ............ Destroying .............." );
 
-//		m_oWorkStatus = ET_SS_UNACTIVE;			///< 更新Quotation会话的状态
-//		m_oQuotPlugin.Release();				///< 释放行情源插件
-//		m_oQuoDataCenter.Release();				///< 释放行情数据资源
+		m_oQuoDataCenter.StopThreads();			///< 停止所有任务线程
+		m_oWorkStatus = ET_SS_UNACTIVE;			///< 更新Quotation会话的状态
+		m_oQuotPlugin.Release();				///< 释放行情源插件
+		m_oQuoDataCenter.Release();				///< 释放行情数据资源
 
 		QuoCollector::GetCollector()->OnLog( TLV_INFO, "Quotation::Release() : ............ Destroyed! .............." );
 	}
