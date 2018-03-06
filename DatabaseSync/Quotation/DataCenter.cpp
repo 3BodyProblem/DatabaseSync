@@ -360,6 +360,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			{
 				return false;
 			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
+			}
 		}
 		break;
 	case XDF_SHOPT:	///< 上期
@@ -369,6 +374,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			if( it == m_mapSHOPT.end() )
 			{
 				return false;
+			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
 			}
 		}
 		break;
@@ -380,6 +390,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			{
 				return false;
 			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
+			}
 		}
 		break;
 	case XDF_SZOPT:	///< 深期
@@ -389,6 +404,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			if( it == m_mapSZOPT.end() )
 			{
 				return false;
+			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
 			}
 		}
 		break;
@@ -400,6 +420,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			{
 				return false;
 			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
+			}
 		}
 		break;
 	case XDF_ZJOPT:	///< 中金期权
@@ -409,6 +434,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			if( it == m_mapCFFOPT.end() )
 			{
 				return false;
+			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
 			}
 		}
 		break;
@@ -420,6 +450,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			{
 				return false;
 			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
+			}
 		}
 		break;
 	case XDF_CNFOPT:///< 商品期权(上海/郑州/大连)
@@ -429,6 +464,11 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 			if( it == m_mapCNFOPT.end() )
 			{
 				return false;
+			}
+			else
+			{
+				refParam = it->second;
+				it->second.SyncFlag = 0;
 			}
 		}
 		break;
@@ -647,22 +687,23 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						refTickLine.ClosePx = pStock->Now / refParam.PriceRate;
 						refTickLine.NowPx = refTickLine.ClosePx;
 						//refTickLine.SettlePx = 0;
-						refTickLine.UpperPx = pStock->HighLimit;
-						refTickLine.LowerPx = pStock->LowLimit;
+						refTickLine.UpperPx = pStock->HighLimit / refParam.PriceRate;
+						refTickLine.LowerPx = pStock->LowLimit / refParam.PriceRate;
 						refTickLine.Amount = pStock->Amount;
 						refTickLine.Volume = pStock->Volume;
 						//refTickLine.OpenInterest = 0;
 						refTickLine.NumTrades = pStock->Records;
-						refTickLine.BidPx1 = pStock->Buy[0].Price;
+						refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 						refTickLine.BidVol1 = pStock->Buy[0].Volume;
-						refTickLine.BidPx2 = pStock->Buy[1].Price;
+						refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 						refTickLine.BidVol2 = pStock->Buy[1].Volume;
-						refTickLine.AskPx1 = pStock->Sell[0].Price;
+						refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 						refTickLine.AskVol1 = pStock->Sell[0].Volume;
-						refTickLine.AskPx2 = pStock->Sell[1].Price;
+						refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 						refTickLine.AskVol2 = pStock->Sell[1].Volume;
 						refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 						refParam.SyncFlag = 1;
+						nErrorCode = 0;
 				}
 				}
 				break;
@@ -693,6 +734,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						//refTickLine.NumTrades = pStock->Records;
 						//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 						refParam.SyncFlag = 1;
+						nErrorCode = 0;
 					}
 				}
 				break;
@@ -724,17 +766,18 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.Volume = pStock->Volume;
 				refTickLine.OpenInterest = pStock->Position;
 				//refTickLine.NumTrades = 0;
-				refTickLine.BidPx1 = pStock->Buy[0].Price;
+				refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 				refTickLine.BidVol1 = pStock->Buy[0].Volume;
-				refTickLine.BidPx2 = pStock->Buy[1].Price;
+				refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 				refTickLine.BidVol2 = pStock->Buy[1].Volume;
-				refTickLine.AskPx1 = pStock->Sell[0].Price;
+				refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 				refTickLine.AskVol1 = pStock->Sell[0].Volume;
-				refTickLine.AskPx2 = pStock->Sell[1].Price;
+				refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				::memcpy( refTickLine.TradingPhaseCode, pStock->TradingPhaseCode, sizeof(pStock->TradingPhaseCode) );
 				refParam.SyncFlag = 1;
+				nErrorCode = 0;
 			}
 		}
 		break;
@@ -761,23 +804,24 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						refTickLine.ClosePx = pStock->Now / refParam.PriceRate;
 						refTickLine.NowPx = refTickLine.ClosePx;
 						//refTickLine.SettlePx = 0;
-						refTickLine.UpperPx = pStock->HighLimit;
-						refTickLine.LowerPx = pStock->LowLimit;
+						refTickLine.UpperPx = pStock->HighLimit / refParam.PriceRate;
+						refTickLine.LowerPx = pStock->LowLimit / refParam.PriceRate;
 						refTickLine.Amount = pStock->Amount;
 						refTickLine.Volume = pStock->Volume;
 						//refTickLine.OpenInterest = 0;
 						refTickLine.NumTrades = pStock->Records;
-						refTickLine.BidPx1 = pStock->Buy[0].Price;
+						refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 						refTickLine.BidVol1 = pStock->Buy[0].Volume;
-						refTickLine.BidPx2 = pStock->Buy[1].Price;
+						refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 						refTickLine.BidVol2 = pStock->Buy[1].Volume;
-						refTickLine.AskPx1 = pStock->Sell[0].Price;
+						refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 						refTickLine.AskVol1 = pStock->Sell[0].Volume;
-						refTickLine.AskPx2 = pStock->Sell[1].Price;
+						refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 						refTickLine.AskVol2 = pStock->Sell[1].Volume;
 						refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 						::memcpy( refTickLine.PreName, refParam.PreName, 4 );
 						refParam.SyncFlag = 1;
+						nErrorCode = 0;
 					}
 				}
 				break;
@@ -808,6 +852,7 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 						//refTickLine.NumTrades = pStock->Records;
 						//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 						refParam.SyncFlag = 1;
+						nErrorCode = 0;
 					}
 				}
 				break;
@@ -839,17 +884,18 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.Volume = pStock->Volume;
 				refTickLine.OpenInterest = pStock->Position;
 				//refTickLine.NumTrades = 0;
-				refTickLine.BidPx1 = pStock->Buy[0].Price;
+				refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 				refTickLine.BidVol1 = pStock->Buy[0].Volume;
-				refTickLine.BidPx2 = pStock->Buy[1].Price;
+				refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 				refTickLine.BidVol2 = pStock->Buy[1].Volume;
-				refTickLine.AskPx1 = pStock->Sell[0].Price;
+				refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 				refTickLine.AskVol1 = pStock->Sell[0].Volume;
-				refTickLine.AskPx2 = pStock->Sell[1].Price;
+				refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				::memcpy( refTickLine.TradingPhaseCode, pStock->TradingPhaseCode, sizeof(pStock->TradingPhaseCode) );
 				refParam.SyncFlag = 1;
+				nErrorCode = 0;
 			}
 		}
 		break;
@@ -879,16 +925,17 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.Volume = pStock->Volume;
 				refTickLine.OpenInterest = pStock->OpenInterest;
 				//refTickLine.NumTrades = 0;
-				refTickLine.BidPx1 = pStock->Buy[0].Price;
+				refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 				refTickLine.BidVol1 = pStock->Buy[0].Volume;
-				refTickLine.BidPx2 = pStock->Buy[1].Price;
+				refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 				refTickLine.BidVol2 = pStock->Buy[1].Volume;
-				refTickLine.AskPx1 = pStock->Sell[0].Price;
+				refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 				refTickLine.AskVol1 = pStock->Sell[0].Volume;
-				refTickLine.AskPx2 = pStock->Sell[1].Price;
+				refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				refParam.SyncFlag = 1;
+				nErrorCode = 0;
 			}
 		}
 		break;
@@ -918,16 +965,17 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.Volume = pStock->Volume;
 				refTickLine.OpenInterest = pStock->OpenInterest;
 				//refTickLine.NumTrades = 0;
-				refTickLine.BidPx1 = pStock->Buy[0].Price;
+				refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 				refTickLine.BidVol1 = pStock->Buy[0].Volume;
-				refTickLine.BidPx2 = pStock->Buy[1].Price;
+				refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 				refTickLine.BidVol2 = pStock->Buy[1].Volume;
-				refTickLine.AskPx1 = pStock->Sell[0].Price;
+				refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 				refTickLine.AskVol1 = pStock->Sell[0].Volume;
-				refTickLine.AskPx2 = pStock->Sell[1].Price;
+				refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				refParam.SyncFlag = 1;
+				nErrorCode = 0;
 			}
 		}
 		break;
@@ -964,16 +1012,17 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.Volume = pStock->Volume;
 				refTickLine.OpenInterest = pStock->OpenInterest;
 				//refTickLine.NumTrades = 0;
-				refTickLine.BidPx1 = pStock->Buy[0].Price;
+				refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 				refTickLine.BidVol1 = pStock->Buy[0].Volume;
-				refTickLine.BidPx2 = pStock->Buy[1].Price;
+				refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 				refTickLine.BidVol2 = pStock->Buy[1].Volume;
-				refTickLine.AskPx1 = pStock->Sell[0].Price;
+				refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 				refTickLine.AskVol1 = pStock->Sell[0].Volume;
-				refTickLine.AskPx2 = pStock->Sell[1].Price;
+				refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				refParam.SyncFlag = 1;
+				nErrorCode = 0;
 			}
 		}
 		break;
@@ -1010,21 +1059,25 @@ int QuotationData::UpdateTickLine( enum XDFMarket eMarket, char* pSnapData, unsi
 				refTickLine.Volume = pStock->Volume;
 				refTickLine.OpenInterest = pStock->OpenInterest;
 				//refTickLine.NumTrades = 0;
-				refTickLine.BidPx1 = pStock->Buy[0].Price;
+				refTickLine.BidPx1 = pStock->Buy[0].Price / refParam.PriceRate;
 				refTickLine.BidVol1 = pStock->Buy[0].Volume;
-				refTickLine.BidPx2 = pStock->Buy[1].Price;
+				refTickLine.BidPx2 = pStock->Buy[1].Price / refParam.PriceRate;
 				refTickLine.BidVol2 = pStock->Buy[1].Volume;
-				refTickLine.AskPx1 = pStock->Sell[0].Price;
+				refTickLine.AskPx1 = pStock->Sell[0].Price / refParam.PriceRate;
 				refTickLine.AskVol1 = pStock->Sell[0].Volume;
-				refTickLine.AskPx2 = pStock->Sell[1].Price;
+				refTickLine.AskPx2 = pStock->Sell[1].Price / refParam.PriceRate;
 				refTickLine.AskVol2 = pStock->Sell[1].Volume;
 				//refTickLine.Voip = pStock->Voip / refParam.PriceRate;
 				refParam.SyncFlag = 1;
+				nErrorCode = 0;
 			}
 		}
 		break;
 	default:
-		QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::UpdateTickLine() : invalid market id(%d)", (int)eMarket );
+		{
+			nErrorCode = -1024;
+			QuoCollector::GetCollector()->OnLog( TLV_ERROR, "QuotationData::UpdateTickLine() : invalid market id(%d)", (int)eMarket );
+		}
 		break;
 	}
 

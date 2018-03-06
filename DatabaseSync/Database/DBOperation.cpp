@@ -139,7 +139,7 @@ int QuotationDatabase::StartTransaction( enum XDFMarket eMkID )
 			return 1;
 		}
 
-		int	nRet = ::mysql_query( &(m_vctMySqlHandle[eMkID]), "BEGIN TRANSACTION;" );
+		int	nRet = ::mysql_query( &(m_vctMySqlHandle[eMkID]), "START TRANSACTION;" );
 
 		if( nRet < 0 )
 		{
@@ -165,7 +165,8 @@ int QuotationDatabase::Commit( enum XDFMarket eMkID )
 			return -1;
 		}
 
-		int	nRet = ::mysql_commit( &(m_vctMySqlHandle[eMkID]) );
+		int	nRet = ::mysql_query( &(m_vctMySqlHandle[eMkID]), "COMMIT;" );
+		///<int	nRet = ::mysql_commit( &(m_vctMySqlHandle[eMkID]) );
 
 		m_vctTransRefCount[eMkID] = 0;
 		if( nRet < 0 )
@@ -184,7 +185,8 @@ int QuotationDatabase::RollBack( enum XDFMarket eMkID )
 {
 	if( NULL != m_pMysqlConnectionList[eMkID] )
 	{
-		int	nRet = ::mysql_rollback( &(m_vctMySqlHandle[eMkID]) );
+		int	nRet = ::mysql_query( &(m_vctMySqlHandle[eMkID]), "ROLLBACK;" );
+		///<int	nRet = ::mysql_rollback( &(m_vctMySqlHandle[eMkID]) );
 
 		m_vctTransRefCount[eMkID] = 0;
 		if( nRet < 0 )
@@ -263,7 +265,7 @@ int QuotationDatabase::Update_Commodity( enum XDFMarket eMkID, short nExchangeID
 	char		pszSqlCmd[1024*2] = { 0 };
 
 	if( 0 >= ::sprintf( pszSqlCmd
-					, "UPDATE commodity SET preClose=%f,preSettle=%f,upperPrice=%f,lowerPrice=%f,price=%f,openPrice=%f,settlementPrice=%f,closePrice=%f,bid1=%f,ask1=%f,highPrice=%f,lowPrice=%f,uplowPercent=%f,volume=%I64d,nowVolumn=%d,amount=%f,isTrading=%d,updatetime=now() WHERE exchange=%d AND code=\'%s\';"
+					, "UPDATE commodity SET preClose=%f,preSettle=%f,upperPrice=%f,lowerPrice=%f,price=%f,openPrice=%f,settlementPrice=%f,closePrice=%f,bid1=%f,ask1=%f,highPrice=%f,lowPrice=%f,uplowPercent=%.4f,volume=%I64d,nowVolumn=%d,amount=%f,isTrading=%d,updatetime=now() WHERE exchange=%d AND code=\'%s\';"
 					, dPreClosePx, dPreSettlePx, dUpperPx, dLowerPx, dLastPx, dOpenPx, dSettlePx, dClosePx, dBid1Px, dAsk1Px, dHighPx, dLowPx, dFluctuationPercent, nVolume, nTradingVolume, dAmount, nIsTrading
 					, nExchangeID, pszCode ) )
 	{
@@ -271,7 +273,6 @@ int QuotationDatabase::Update_Commodity( enum XDFMarket eMkID, short nExchangeID
 		return -1024*2;
 	}
 
-	//::printf( "%s\n", pszSqlCmd );
 	return ExecuteSql( eMkID, pszSqlCmd );
 }
 

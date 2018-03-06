@@ -1832,7 +1832,14 @@ void Quotation::SyncSnapshot2Database()
 					{
 						tagParam.TradingVolume = tagTickLine.Volume - tagParam.Volume;
 						tagParam.Volume = tagTickLine.Volume;
-						tagParam.FluctuationPercent = tagTickLine.NowPx/tagTickLine.PreClosePx;				///< 涨跌幅度(用收盘价计算)
+						if( tagTickLine.PreClosePx == 0 )
+						{
+							tagParam.FluctuationPercent = 0.;
+						}
+						else
+						{
+							tagParam.FluctuationPercent = (tagTickLine.NowPx-tagTickLine.PreClosePx)/tagTickLine.PreClosePx;///< 涨跌幅度(用收盘价计算)
+						}
 						QuotationDatabase::GetDbObj().Update_Commodity( XDF_SH, 1, tagTickLine.Code, tagTickLine.PreClosePx, tagTickLine.PreSettlePx, tagTickLine.UpperPx, tagTickLine.LowerPx, tagTickLine.NowPx, tagTickLine.SettlePx
 							, tagTickLine.OpenPx, tagTickLine.ClosePx, tagTickLine.BidPx1, tagTickLine.AskPx1, tagTickLine.HighPx, tagTickLine.LowPx, tagTickLine.Amount, tagTickLine.Volume, tagParam.TradingVolume
 							, tagParam.FluctuationPercent, tagParam.IsTrading );
