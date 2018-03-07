@@ -239,6 +239,7 @@ int Quotation::SaveShLv1()
 
 					if( true == Configuration::GetConfig().InWhiteTable( XDF_SH, pData->SecKind ) )
 					{
+						::strncpy( tagParam.Code, pData->Code, 6 );
 						T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SH, std::string( pData->Code, 6 ), tagParam );
 
 						///< 构建商品集合
@@ -480,6 +481,7 @@ int Quotation::SaveShOpt()
 				if( abs(pMsgHead->MsgType) == 2 )
 				{
 					XDFAPI_NameTableShOpt*	pData = (XDFAPI_NameTableShOpt*)pbuf;
+					::strncpy( tagParam.Code, pData->Code, 8 );
 					T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SHOPT, std::string( pData->Code, 8 ), tagParam );
 
 					///< 构建商品集合
@@ -651,6 +653,7 @@ int Quotation::SaveSzLv1()
 
 					if( true == Configuration::GetConfig().InWhiteTable( XDF_SZ, pData->SecKind ) )
 					{
+						::strncpy( tagParam.Code, pData->Code, 6 );
 						T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SZ, std::string( pData->Code, 6 ), tagParam );
 
 						///< 构建商品集合
@@ -891,6 +894,7 @@ int Quotation::SaveSzOpt()
 				if( abs(pMsgHead->MsgType) == 9 )
 				{
 					XDFAPI_NameTableSzOpt*	pData = (XDFAPI_NameTableSzOpt*)pbuf;
+					::strncpy( tagParam.Code, pData->Code, 8 );
 					T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_SZOPT, std::string( pData->Code, 8 ), tagParam );
 
 					///< 构建商品集合
@@ -1061,6 +1065,7 @@ int Quotation::SaveCFF()
 				if( abs(pMsgHead->MsgType) == 4 )
 				{
 					XDFAPI_NameTableZjqh*	pData = (XDFAPI_NameTableZjqh*)pbuf;
+					::strncpy( tagParam.Code, pData->Code, 6 );
 					T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_CF, std::string( pData->Code, 6 ), tagParam );
 
 					///< 构建商品集合
@@ -1379,6 +1384,7 @@ int Quotation::SaveCNF()
 				if( abs(pMsgHead->MsgType) == 7 )
 				{
 					XDFAPI_NameTableCnf*	pData = (XDFAPI_NameTableCnf*)pbuf;
+					::strncpy( tagParam.Code, pData->Code, 6 );
 					T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_CNF, std::string( pData->Code, 6 ), tagParam );
 
 					///< 构建商品集合
@@ -1554,6 +1560,7 @@ int Quotation::SaveCNFOPT()
 				if( abs(pMsgHead->MsgType) == 11 )
 				{
 					XDFAPI_NameTableCnfOpt*	pData = (XDFAPI_NameTableCnfOpt*)pbuf;
+					::strcpy( tagParam.Code, pData->Code );
 					T_LINE_PARAM*			pTagParam = m_oQuoDataCenter.BuildSecurity( XDF_CNFOPT, std::string( pData->Code ), tagParam );
 
 					///< 构建商品集合
