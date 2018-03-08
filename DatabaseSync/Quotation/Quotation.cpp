@@ -1685,6 +1685,11 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 		nStatus = XRS_Normal;
 	}
 
+	if( m_oWorkStatus == ET_SS_UNACTIVE )
+	{
+		return true;
+	}
+
 	switch( nStatus )
 	{
 	case 0:

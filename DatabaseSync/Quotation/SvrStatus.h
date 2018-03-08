@@ -3,7 +3,6 @@
 
 
 #pragma warning(disable:4786)
-#include <set>
 #include <stdexcept>
 #include "../QuoteCltDef.h"
 
