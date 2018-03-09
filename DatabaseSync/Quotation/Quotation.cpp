@@ -1830,18 +1830,21 @@ bool __stdcall	Quotation::XDF_OnRspStatusChanged( unsigned char cMarket, int nSt
 			{
 				::strcpy( pszDesc, "不可用" );
 				ServerStatus::GetStatusObj().UpdateMkStatus( (enum XDFMarket)cMarket, pszDesc );
+				m_vctMkSvrStatus[cMarket] = ET_SS_DISCONNECTED;
 			}
 			break;
 		case 1:
 			{
 				::strcpy( pszDesc, "未知状态" );
 				ServerStatus::GetStatusObj().UpdateMkStatus( (enum XDFMarket)cMarket, pszDesc );
+				m_vctMkSvrStatus[cMarket] = ET_SS_DISCONNECTED;
 			}
 			break;
 		case 2:
 			{
 				::strcpy( pszDesc, "初始化" );
 				ServerStatus::GetStatusObj().UpdateMkStatus( (enum XDFMarket)cMarket, pszDesc );
+				m_vctMkSvrStatus[cMarket] = ET_SS_DISCONNECTED;
 			}
 			break;
 		case 5:
