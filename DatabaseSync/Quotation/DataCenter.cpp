@@ -346,7 +346,7 @@ int QuotationData::UpdatePreName( enum XDFMarket eMarket, std::string& sCode, ch
 
 bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam )
 {
-	T_MAP_QUO::iterator it = NULL;
+	T_MAP_QUO::iterator it;// = NULL;
 	int					nErrorCode = 0;
 
 	switch( eMarket )
@@ -488,7 +488,7 @@ bool QuotationData::QuerySecurity( enum XDFMarket eMarket, std::string& sCode, T
 
 T_LINE_PARAM* QuotationData::BuildSecurity( enum XDFMarket eMarket, std::string& sCode, T_LINE_PARAM& refParam, bool bQueryOnly )
 {
-	T_MAP_QUO::iterator it = NULL;
+	T_MAP_QUO::iterator it;// = NULL;
 	unsigned int		nBufSize = 0;
 	char*				pDataPtr = NULL;
 	int					nErrorCode = 0;
